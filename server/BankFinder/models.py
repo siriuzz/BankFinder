@@ -1,7 +1,7 @@
 from django.db import models
 
 class bank(models.Model):
-    bank_id=models.IntegerField(primary_key=True, unique=True,null=False)
+    bank_id=models.AutoField(primary_key=True, unique=True)
     bank_name = models.CharField(max_length=250, null=False, default="-")
     website = models.CharField(max_length=250,null=False, default="N/A")
     contact_number = models.CharField(max_length=15,null=False, default="000-000-0000")
@@ -17,19 +17,19 @@ class branch(models.Model):
     closing_hour = models.TimeField(null=False)
 
 class source_currency(models.Model):
-    source_currency_id = models.IntegerField(primary_key=True,unique=True,null=False)
+    source_currency_id = models.AutoField(primary_key=True,unique=True)
     currency_code = models.CharField(max_length=3,null=False)
     currency_name = models.CharField(max_length=150,null=False)
     pass
     
 class target_currency(models.Model):
-    target_currency_id = models.IntegerField(primary_key=True,unique=True,null=False)
+    target_currency_id = models.AutoField(primary_key=True,unique=True)
     currency_code = models.CharField(max_length=3,null=False)
     currency_name = models.CharField(max_length=150,null=False)
     pass
 
 class exchange_rate(models.Model):
-    exchange_rate_id = models.IntegerField(primary_key=True, unique=True,null=False)
+    exchange_rate_id = models.AutoField(primary_key=True, unique=True)
     source_currency_id = models.ForeignKey(source_currency, on_delete=models.CASCADE,null=False, db_column='source_currency_id')
     target_currency_id = models.ForeignKey(target_currency, on_delete=models.CASCADE,null=False, db_column='target_currency_id')
     last_update = models.DateTimeField(null=False)
@@ -42,9 +42,3 @@ class bank_exchange_rate(models.Model):
     exchange_rate_id = models.ForeignKey(exchange_rate,primary_key=True, on_delete=models.CASCADE, db_column='exchange_rate_id')
     rate = models.FloatField(null=False)
     last_update = models.DateTimeField(null=False)
-
-    
-    
-
-
-   
