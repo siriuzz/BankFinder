@@ -9,7 +9,7 @@ class bank(models.Model):
 
 class branch(models.Model):
     bank_id=models.ForeignKey(bank, on_delete=models.CASCADE,db_column='bank_id')
-    branch_id = models.IntegerField(primary_key=True, unique=True)
+    branch_id = models.AutoField(primary_key=True, unique=True)
     branch_name = models.CharField(max_length=200, null=False)
     location = models.CharField(max_length=200, null=False)
     branch_contact_number = models.CharField(max_length=15, null=False)
