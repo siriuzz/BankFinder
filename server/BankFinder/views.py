@@ -11,7 +11,7 @@ class BankViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = bank.objects.all().order_by('-date_joined')
+    queryset = bank.objects.all().order_by('-bank_id')
     serializer_class = BankSerializer
     permission_classes = [permissions.IsAuthenticated]
 

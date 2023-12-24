@@ -20,7 +20,7 @@ from django.urls import path, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'bank',)
+router.register(r'bank',views.BankViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,3 +28,5 @@ urlpatterns = [
     
     path('api/', views.getData)
 ]
+
+urlpatterns += router.urls
