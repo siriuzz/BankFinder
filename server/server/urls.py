@@ -19,14 +19,16 @@ from BankFinder import views
 from django.urls import path, include
 from rest_framework import routers
 
+
 router = routers.DefaultRouter()
 router.register(r'bank',views.BankViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
+    path('admin/', admin.site.urls, name='adminPage'),
     
-    path('api/', views.getData)
+    path('api/', views.SerializerTest, name="homePage"),
+    path('api/register', views.sign_up, name="registerPage"),
+    path('api/login', views.sign_in, name="loginPage"),
 ]
 
 urlpatterns += router.urls
