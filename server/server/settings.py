@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'BankFinder',
     'rest_framework',
     'drf_spectacular',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -122,6 +124,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Add the address of your Vue.js development server
+]
+CORS_ALLOW_CREDENTIALS = True
+
 
 
 # Internationalization

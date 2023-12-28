@@ -15,6 +15,9 @@
         <v-text-field clearable label="Inserta el nombre de algun banco" variant="outlined"></v-text-field>
 
         </v-sheet>
+        <v-sheet>
+          <bank-list/>
+        </v-sheet>
       </v-row>
      
       
@@ -24,4 +27,5 @@
 </template>
 
 <script setup>
+import BankList from '@/components/BankList.vue'
 </script>
