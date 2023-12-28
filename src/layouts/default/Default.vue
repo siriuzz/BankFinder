@@ -1,12 +1,16 @@
 <template>
   <v-app>
-    <default-bar />
+    <v-container fluid>
+      <default-bar />
+      <View />
 
-    <default-view />
+    </v-container>
+    <default-footer />
   </v-app>
 </template>
 
 <script setup>
-  import DefaultBar from './AppBar.vue'
-  import DefaultView from './View.vue'
+import DefaultBar from './AppBar.vue'
+import View from './View.vue'
+import DefaultFooter from './Footer.vue'
 </script>
