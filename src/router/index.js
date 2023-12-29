@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import('@/layouts/default/Default'),
     children: [
       {
         path: '',
@@ -19,6 +19,10 @@ const routes = [
   {
     path: '/Login',
     component: ()=>import('@/components/LogIn.vue'),
+  },
+  {
+    path:'/banks/:id',
+    name: 'banks'
   }
 ]
 

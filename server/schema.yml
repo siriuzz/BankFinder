@@ -1,0 +1,539 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/banks/:
+    get:
+      operationId: api_banks_list
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBankList'
+          description: ''
+    post:
+      operationId: api_banks_create
+      description: API endpoint that allows users to be viewed or edited.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+  /api/banks/{bank_id}:
+    get:
+      operationId: api_banks_retrieve
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+  /api/banks/{bank_id}/:
+    get:
+      operationId: api_banks_retrieve_2
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    put:
+      operationId: api_banks_update
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    patch:
+      operationId: api_banks_partial_update
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    delete:
+      operationId: api_banks_destroy
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /banks/:
+    get:
+      operationId: banks_list
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - banks
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBankList'
+          description: ''
+    post:
+      operationId: banks_create
+      description: API endpoint that allows users to be viewed or edited.
+      tags:
+      - banks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+  /banks/{bank_id}/:
+    get:
+      operationId: banks_retrieve
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - banks
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    put:
+      operationId: banks_update
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - banks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    patch:
+      operationId: banks_partial_update
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - banks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+    delete:
+      operationId: banks_destroy
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_id
+        schema:
+          type: integer
+        description: A unique integer value identifying this bank.
+        required: true
+      tags:
+      - banks
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Bank:
+      type: object
+      properties:
+        bank_name:
+          type: string
+          maxLength: 250
+        website:
+          type: string
+          maxLength: 250
+        contact_number:
+          type: string
+          maxLength: 15
+    PaginatedBankList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bank'
+    PatchedBank:
+      type: object
+      properties:
+        bank_name:
+          type: string
+          maxLength: 250
+        website:
+          type: string
+          maxLength: 250
+        contact_number:
+          type: string
+          maxLength: 15
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

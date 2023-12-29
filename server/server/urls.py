@@ -21,14 +21,14 @@ from rest_framework import routers
 
 
 router = routers.DefaultRouter()
-router.register(r'bank',views.BankViewSet)
+router.register(r'banks',views.BankViewSet,basename='bank')
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls, name='adminPage'),
-    
-    path('api/', views.SerializerTest, name="homePage"),
-    path('api/register', views.sign_up, name="registerPage"),
-    path('api/login', views.sign_in, name="loginPage"),
+
+    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    path('api/', include("BankFinder.urls")),
 ]
 
 urlpatterns += router.urls
