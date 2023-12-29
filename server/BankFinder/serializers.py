@@ -4,7 +4,7 @@ from .models import *
 class BankSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=bank
-        fields=['bank_name','website','contact_number']
+        fields=['bank_id','bank_name','website','contact_number']
         
 class BranchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
