@@ -31,8 +31,11 @@ class BankViewSet(viewsets.ModelViewSet):
         serializer = BankSerializer(bank_obj)
         return Response(serializer.data)
 
+def testHomepage(request):
+    return render(request, 'homePage.html', )
 
-def SerializerTest(request):
+
+def serializerTest(request):
     app = bank.objects.all()
     serializer = BankSerializer(app, many=True)
     return JsonResponse({"banks": serializer.data}, safe=False)
@@ -41,7 +44,7 @@ def SerializerTest(request):
 def sign_up(request):
     if request.method == 'GET':
         form = RegisterForm()
-        return render(request, 'register.html', { 'form': form})
+        return render(request, 'registration/register.html', { 'form': form})
     if request.method == 'POST':
         form = RegisterForm(request.POST) 
         if form.is_valid():
@@ -51,14 +54,6 @@ def sign_up(request):
             login(request, user)
             return redirect("loginPage")
         else:
-            return render(request, 'register.html', {'form': form})
-        
-def sign_in(request):
-    if request.method == 'GET':
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            return redirect("homePage")
+
+            return render(request, 'registration/register.html', {'form': form})
 

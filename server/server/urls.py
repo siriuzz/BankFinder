@@ -28,7 +28,8 @@ router.register(r'banks',views.BankViewSet,basename='bank')
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
+    #path('api/', include(router.urls)),
+    path('api/', include("BankFinder.urls")),
     path('api-auth/', include('rest_framework.urls')),
     
     # path('api/', include('router.urls'))
@@ -41,6 +42,7 @@ urlpatterns = [
     
     path('api/register', views.sign_up, name="registerPage"),
     path('api/login', views.sign_in, name="loginPage"),
+
 ]
 
 urlpatterns += router.urls
