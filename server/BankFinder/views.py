@@ -54,4 +54,6 @@ def sign_up(request):
             login(request, user)
             return redirect("loginPage")
         else:
+
             return render(request, 'registration/register.html', {'form': form})
+
