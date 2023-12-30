@@ -6,6 +6,7 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
 from django.middleware.csrf import get_token
+from django.contrib.auth.models import User
 
 from .models import *
 from .serializers import *
@@ -54,6 +55,19 @@ class UserViewSet(viewsets.ModelViewSet):
            return JsonResponse({'status': 'success'}, status=200)
         else:
            return JsonResponse({'status': 'failure'}, status=401)
+    
+    def register(self, request):
+        try:
+            user = User.objects.create_user(request.data.get('username'), request.data.get('useremail'), request.data.get('password'))
+            user.first_name = request.data.get('firstname')
+            user.last_name = request.data.get('lastname')
+            user.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status': 'failure', 'error': e}, status=401)
+            
+        
+
 
 def testHomepage(request):
     return render(request, 'homePage.html', )
@@ -63,29 +77,3 @@ def serializerTest(request):
     app = bank.objects.all()
     serializer = BankSerializer(app, many=True)
     return JsonResponse({"banks": serializer.data}, safe=False)
-
-
-def sign_up(request):
-    if request.method == 'GET':
-        form = RegisterForm()
-        return render(request, 'registration/register.html', { 'form': form})
-    if request.method == 'POST':
-        form = RegisterForm(request.POST) 
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            login(request, user)
-            return redirect("loginPage")
-        else:
-
-            return render(request, 'registration/register.html', {'form': form})
-
-def sign_in(request):
-    if request.method == 'GET':
-        form = LoginForm()
-        return render(request, 'registration/login.html', {'form': form})
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            return redirect("homePage")
