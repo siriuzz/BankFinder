@@ -32,16 +32,17 @@ urlpatterns = [
     path('api/', include("BankFinder.urls")),
     path('api-auth/', include('rest_framework.urls')),
     
-    # path('api/', include('router.urls'))
-    path('api/banks/', views.BankViewSet.as_view({'get': 'getBanks'}), name='bank-list'),
-    path('api/banks/<int:pk>',views.BankViewSet.as_view({'get': 'getBankById'}), name='bank-detail'),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # # path('api/', include('router.urls'))
+    # path('api/banks/', views.BankViewSet.as_view({'get': 'getBanks'}), name='bank-list'),
+    # path('api/banks/<int:pk>',views.BankViewSet.as_view({'get': 'getBankById'}), name='bank-detail'),
+    # path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     
     path('api/register', views.sign_up, name="registerPage"),
-    path('api/login', views.sign_in, name="loginPage"),
+    # path('api/login', views.sign_in, name="loginPage"),
+    
 
 ]
 

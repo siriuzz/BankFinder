@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -22,19 +24,14 @@ export default {
   },
   methods: {
     async fetchBanks() {
+      console.log(this.$cookies.get('csrftoken'));
       try {
-        const username = "username-django";
-        const password = "password-django";
         const response = await this.$axios.get(`http://${this.apiUrl}/banks/`, {
-    
-          auth: {
-            username: username,
-            password: password,
-          },
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': this.$cookies.get('csrftoken'), // Include CSRF token in the headers
+            },
+          },{withCredentials:true,xsrfCookieName:'csrftoken',xsrfHeaderName:'X-CSRFToken'});
         console.log(response);
         this.banks = response.data.results;
       } catch (error) {

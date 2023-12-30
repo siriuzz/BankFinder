@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: '/Login',
-    component: ()=>import('@/components/LogIn.vue'),
+    component: ()=>import('@/views/Login.vue'),
   },
   {
     path:'/banks/:id',

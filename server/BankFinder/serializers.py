@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth.models import User
 
 class BankSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -20,3 +21,4 @@ class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=target_currency
         fields=['currency_code','currency_name']
+        

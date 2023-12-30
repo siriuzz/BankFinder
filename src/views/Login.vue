@@ -1,11 +1,11 @@
 <template>
     <v-app>
-        <LogIn/>
+        <LoginForm/>
     </v-app>
   </template>
   
   <script setup>
-    import LogIn from '@/components/LogIn.vue'
+    import LoginForm from '@/components/LoginForm.vue'
     
     
   </script>
