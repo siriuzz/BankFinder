@@ -21,4 +21,14 @@ class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=target_currency
         fields=['currency_code','currency_name']
+
+class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model=exchange_rate
+        fields=['exchange_rate_id','source_currency_id','target_currency_id','last_update']
+
+class BankExchangeRate(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model=exchange_rate
+        fields=['bank_id', 'exchange_rate_id', 'rate', 'last_update']
         

@@ -25,7 +25,7 @@ class BankViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = bank.objects.all().order_by('-bank_id')
+    queryset = bank.objects.all().order_by('bank_id')
     serializer_class = BankSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -33,7 +33,6 @@ class BankViewSet(viewsets.ModelViewSet):
         banks = bank.objects.all()
         serializer = BankSerializer(banks,many=True)
         return Response(serializer.data)
-
 
     def getBankById(self, request, PK=None):
         bank_obj = bank.objects.get(pk=PK)
@@ -59,7 +58,6 @@ class BankViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':e}, status=401)
-
     
     def deleteBank(self, request, PK=None):
         deleted_Bank = bank.objects.get(pk=PK)
@@ -68,6 +66,22 @@ class BankViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':e}, status=401)
+
+
+class BranchViewSet(viewsets.ModelViewSet):
+    queryset = branch.objects.all().order_by('branch_id')
+    serializer_class = BankSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getBanks(self,request):
+        banks = branch.objects.all()
+        serializer = BankSerializer(banks,many=True)
+        return Response(serializer.data)
+
+    def getBankById(self, request, PK=None):
+        bank_obj = bank.objects.get(pk=PK)
+        serializer = BankSerializer(bank_obj)
+        return Response(serializer.data)
 
 
 class UserViewSet(viewsets.ModelViewSet):
