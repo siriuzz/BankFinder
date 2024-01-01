@@ -16,6 +16,8 @@ urlpatterns = [
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('auth/login', UserViewSet.as_view({'post':'login'}), name="Login"),
     path('auth/register', UserViewSet.as_view({'post': 'register'}), name="Register"),
+    path('auth/logout/',UserViewSet.as_view({'get':'logout'}),name="Logout"),
+    path('is-auth/', UserViewSet.as_view({'get':'check_auth'}), name="check_auth"),
     path('get_csrf_token/', get_csrf_token, name="get_csrf_token")
     
 ]

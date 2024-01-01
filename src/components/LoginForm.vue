@@ -12,10 +12,6 @@
 </template>
  
 <script>
-import axios from 'axios';
-axios.defaults.withCredentials = true;
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 export default {
   data() {
@@ -23,7 +19,7 @@ export default {
       username: '',
       password: '',
       apiUrl: import.meta.env.VITE_API_URL,
-      csrfToken: ''
+      csrfToken: '',
 
     };
   },
@@ -43,9 +39,8 @@ export default {
       }
     },
     async login() {
+      // console.log(localStorage.getItem('csrftoken'))
       try {
-        const username = this.username;
-        const password = this.password;
         const response = await this.$axios.post(
           `http://${this.apiUrl}/auth/login`,
           {
@@ -53,14 +48,19 @@ export default {
             password: this.password
           },
           {
-            headers: {
-
-              'Content-Type': 'application/json',
-              'X-CSRFToken': this.csrfToken, // Include CSRF token in the headers
-            },
-          },{withCredentials:true,xsrfCookieName:'csrfToken',xsrfHeaderName:'CSRFToken'}
+              headers: {
+  
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken, // Include CSRF token in the headers
+              },
+          }
         );
-        localStorage.setItem('token', response.data.token);
+        if (response.status = 200) {
+          // localStorage.setItem('token', response.data.token);
+          console.log('new token', response.data.csrftoken)
+          this.$router.push('/');
+
+        }
       } catch (error) {
         console.error(error);
       }

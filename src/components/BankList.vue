@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
@@ -31,7 +30,7 @@ export default {
               'Content-Type': 'application/json',
               'X-CSRFToken': this.$cookies.get('csrftoken'), // Include CSRF token in the headers
             },
-          },{withCredentials:true,xsrfCookieName:'csrftoken',xsrfHeaderName:'X-CSRFToken'});
+          });
         console.log(response);
         this.banks = response.data.results;
       } catch (error) {
