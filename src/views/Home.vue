@@ -13,12 +13,13 @@
           justify-content="center"
         >
         <v-text-field clearable label="Inserta el nombre de algun banco" variant="outlined"></v-text-field>
+        <bank-list/>
 
         </v-sheet>
         <v-sheet>
-          <bank-list/>
         </v-sheet>
       </v-row>
+      
      
       
     </v-col>

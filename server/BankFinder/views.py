@@ -27,7 +27,7 @@ class BankViewSet(viewsets.ModelViewSet):
     """
     queryset = bank.objects.all().order_by('-bank_id')
     serializer_class = BankSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def getBanks(self,request):
         banks = bank.objects.all()
@@ -50,7 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action == 'login' or self.action == 'register':
+        if self.action == 'login' or self.action == 'register' or self.action =='check_auth':
            # Solo para esta vista, permitimos el acceso a cualquier usuario
            return [AllowAny()]
         return super().get_permissions()
@@ -81,7 +81,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if request.user.is_authenticated:
                 return Response({'auth':True},status=200)
             else:
-                return Response({'auth':False},status=403)
+                return Response({'auth':False})
         except Exception as e:
             return Response({'error', e},status=500)
 

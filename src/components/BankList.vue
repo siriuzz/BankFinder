@@ -1,12 +1,14 @@
 <template>
-    <div>
-        <h2>Bank List</h2>
-        <ul>
-            <li v-for="bank in banks" :key="bank.bank_id">
-                {{ bank.bank_name }} - {{ bank.website }}
-            </li>
-        </ul>
-    </div>
+  <v-sheet>
+    <v-list >
+      <v-list-item v-for="bank in banks" :key="bank.bank_id" :title="bank.bank_name">
+        Website: {{ bank.website }} <br>
+        Contacto: {{ bank.contact_number }}
+
+      </v-list-item>
+    </v-list>
+    
+  </v-sheet>
 </template>
 
 <script>
@@ -23,16 +25,10 @@ export default {
   },
   methods: {
     async fetchBanks() {
-      console.log(this.$cookies.get('csrftoken'));
       try {
-        const response = await this.$axios.get(`http://${this.apiUrl}/banks/`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': this.$cookies.get('csrftoken'), // Include CSRF token in the headers
-            },
-          });
+        const response = await this.$axios.get(`http://${this.apiUrl}/banks/`);
         console.log(response);
-        this.banks = response.data.results;
+        this.banks = response.data;
       } catch (error) {
         console.error('Error fetching banks:', error);
       }

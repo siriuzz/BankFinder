@@ -27,38 +27,40 @@
 
 <script>
 export default {
-  data(){
+  data() {
     return {
-      is_logged:true
+      is_logged: true
     }
   },
   methods: {
     async checkIfLoggedIn() {
-        try {
-          const response = await this.$axios.get(
-            `http://${import.meta.env.VITE_API_URL}/is-auth/`,
-          );
-
-          if(response.data.auth){
-            this.is_logged=true
-          } else this.is_logged=false
-          // localStorage.setItem('token', response.data.token);
-        } catch (error) {
-          console.error(error);
-        }
-    },
-    async logout(){
       try {
         const response = await this.$axios.get(
-            `http://${import.meta.env.VITE_API_URL}/auth/logout/`
-          );
-          console.log(response);
+          `http://${import.meta.env.VITE_API_URL}/is-auth/`,
+        );
+
+        if (response.data.auth) {
+          this.is_logged = true
+        } else this.is_logged = false
+        // localStorage.setItem('token', response.data.token);
       } catch (error) {
+        console.error(error);
+      }
+    },
+    async logout() {
+      try {
+        const response = await this.$axios.get(
+          `http://${import.meta.env.VITE_API_URL}/auth/logout/`
+        );
         
+        this.$router.push('/login')
+
+      } catch (error) {
+
       }
     }
   },
-  mounted(){
+  mounted() {
     this.checkIfLoggedIn()
   }
 }
