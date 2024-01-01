@@ -10,10 +10,15 @@ urlpatterns = [
 
         # path('api/', include('router.urls'))
     path('banks/', BankViewSet.as_view({'get': 'getBanks'}), name='bank-list'),
-    path('banks/<int:pk>', BankViewSet.as_view({'get': 'getBankById'}), name='bank-detail'),
+    path('banks/<int:PK>', BankViewSet.as_view({'get': 'getBankById'}), name='bank-detail'),
+    path('banks/create', BankViewSet.as_view({'post': 'createBank'}), name='bank-creation'),
+    path('banks/delete/<int:PK>', BankViewSet.as_view({'delete': 'deleteBank'}), name='bank-elimination'),
+    path('banks/update/<int:PK>', BankViewSet.as_view({'patch': 'updateBank'}), name='bank-update'),
+
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
     path('auth/login', UserViewSet.as_view({'post':'login'}), name="Login"),
     path('auth/register', UserViewSet.as_view({'post': 'register'}), name="Register"),
     path('auth/logout/',UserViewSet.as_view({'get':'logout'}),name="Logout"),

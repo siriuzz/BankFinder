@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login, logout, alogout
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -35,11 +35,40 @@ class BankViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-    def getBankById(self, request, pk=None):
-        bank_obj = self.get_object()
+    def getBankById(self, request, PK=None):
+        bank_obj = bank.objects.get(pk=PK)
         serializer = BankSerializer(bank_obj)
         print('hola')
         return Response(serializer.data)
+    
+    def createBank(self, request):
+        new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
+        try:
+            new_Bank.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':e}, status=401)
+    
+    def updateBank(self, request, PK):
+        updated_Bank = bank.objects.get(pk=PK)
+        updated_Bank.bank_name = request.data.get("bank_name")
+        updated_Bank.website = request.data.get("website")
+        updated_Bank.contact_number = request.data.get("contact_number")
+        try:
+            updated_Bank.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':e}, status=401)
+
+    
+    def deleteBank(self, request, PK=None):
+        deleted_Bank = bank.objects.get(pk=PK)
+        try:
+            deleted_Bank.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':e}, status=401)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
