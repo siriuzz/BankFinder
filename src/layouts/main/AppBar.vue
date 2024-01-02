@@ -7,19 +7,15 @@
     </v-app-bar-title>
     <v-spacer></v-spacer>
 
-    <v-btn button to="/login">
+    <v-btn v-if="!this.is_logged" button to="/login">
       Log in
     </v-btn>
 
-    <v-btn button to="/register">
+    <v-btn v-if="!this.is_logged" button to="/register">
       Register
     </v-btn>
-
-    <v-btn icon>
-      <v-icon>mdi-dots-vertical</v-icon>
-    </v-btn>
     <!-- <v-btn @click="is_logged=!is_logged">togge</v-btn> -->
-    <v-btn v-if="checkIfLoggedIn" @click="logout()">
+    <v-btn v-if="this.is_logged" @click="logout()">
       Logout
     </v-btn>
   </v-app-bar>

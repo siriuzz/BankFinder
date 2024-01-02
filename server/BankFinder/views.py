@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.response import Response
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, filters
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.middleware.csrf import get_token
@@ -28,6 +28,8 @@ class BankViewSet(viewsets.ModelViewSet):
     queryset = bank.objects.all().order_by('bank_id')
     serializer_class = BankSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['bank_name']
 
     def getBanks(self,request):
         banks = bank.objects.all()
@@ -39,6 +41,22 @@ class BankViewSet(viewsets.ModelViewSet):
         serializer = BankSerializer(bank_obj)
         print('hola')
         return Response(serializer.data)
+    
+    def getBankByName(self,request,bank_name):
+        if bank_name:
+          filter = bank.objects.filter(bank_name__icontains=bank_name)
+        #   filter = bank.objects.filter(bank_name__istartswith=bank_name)
+        #   filter = bank.objects.filter(bank_name__iendswith=bank_name)
+        #   filter = bank.objects.filter(bank_name__icontains=bank_name)
+        #   filter = bank.objects.filter(bank_name__iexact=bank_name)
+        
+          print(str(filter.query))
+          results = filter.values('bank_name')  # Execute the query
+          print(results)
+          serializer = BankSerializer(filter, many=True)
+          return Response({'result':serializer.data})
+        else:
+          return Response({'error':'No search query provided'})
     
     def createBank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
