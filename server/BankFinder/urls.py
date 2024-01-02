@@ -15,6 +15,12 @@ urlpatterns = [
     path('banks/delete/<int:PK>', BankViewSet.as_view({'delete': 'deleteBank'}), name='bank-elimination'),
     path('banks/update/<int:PK>', BankViewSet.as_view({'patch': 'updateBank'}), name='bank-update'),
 
+    path('branches/', BranchViewSet.as_view({'get': 'getBranches'}), name='branch-list'),
+    path('branches/<int:PK>', BranchViewSet.as_view({'get': 'getBranchById'}), name='branch-detail'),
+    path('branches/create', BranchViewSet.as_view({'post': 'createBranch'}), name='branch-creation'),
+    path('branches/delete/<int:PK>', BranchViewSet.as_view({'delete': 'deleteBranch'}), name='branch-elimination'),
+    path('branches/update/<int:PK>', BranchViewSet.as_view({'patch': 'updateBranch'}), name='branch-update'),
+
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

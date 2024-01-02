@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
+from datetime import *
 
 from .models import *
 from .serializers import *
@@ -25,7 +26,7 @@ class BankViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = bank.objects.all().order_by('bank_id')
+    queryset = bank.objects.all().order_by('-bank_id')
     serializer_class = BankSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -66,22 +67,59 @@ class BankViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':e}, status=401)
+        
 
 
 class BranchViewSet(viewsets.ModelViewSet):
-    queryset = branch.objects.all().order_by('branch_id')
-    serializer_class = BankSerializer
+    queryset = branch.objects.all().order_by('-branch_id')
+    serializer_class = BranchSerializer
     permission_classes = [permissions.AllowAny]
 
-    def getBanks(self,request):
-        banks = branch.objects.all()
-        serializer = BankSerializer(banks,many=True)
+    def getBranches(self,request):
+        branches = branch.objects.all()
+        serializer = BranchSerializer(branches, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getBankById(self, request, PK=None):
-        bank_obj = bank.objects.get(pk=PK)
-        serializer = BankSerializer(bank_obj)
+    def getBranchById(self, request, PK=None):
+        branches = branch.objects.get(pk=PK)
+        serializer = BranchSerializer(branches, context={'request': request})
         return Response(serializer.data)
+    
+    def createBranch(self, request):
+        Bank_id = bank.objects.get(pk=request.data.get("bank_id"))
+        new_Branch = branch(
+            bank_id=Bank_id,
+            branch_name=request.data.get("branch_name"), 
+            location=request.data.get("location"), 
+            branch_contact_number=request.data.get("branch_contact_number"),
+            opening_hour=request.data.get("opening_hour"),
+            closing_hour=request.data.get("closing_hour"))
+        try:
+            new_Branch.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':e}, status=401)
+    
+    def updateBranch(self, request, PK):
+        updated_Branch = branch.objects.get(pk=PK)
+        updated_Branch.branch_name = request.data.get('branch_name')
+        updated_Branch.location = request.data.get('location')
+        updated_Branch.branch_contact_number = request.data.get('branch_contact_number')
+        updated_Branch.opening_hour = request.data.get('opening_hour')
+        updated_Branch.closing_hour = request.data.get('closing_hour')
+        try:
+            updated_Branch.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteBranch(self, request, PK=None):
+        deleted_Branch = branch.objects.get(pk=PK)
+        try:
+            deleted_Branch.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':e}, status=401)
 
 
 class UserViewSet(viewsets.ModelViewSet):

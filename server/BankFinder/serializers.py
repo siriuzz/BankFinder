@@ -10,7 +10,7 @@ class BankSerializer(serializers.HyperlinkedModelSerializer):
 class BranchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=branch
-        fields=['bank_id','branch_name','location','branch_contact_number','opening_hour','closing_hour']
+        fields=['bank_id','branch_id','branch_name','location','branch_contact_number','opening_hour','closing_hour']
         
 class SourceCurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
