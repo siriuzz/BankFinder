@@ -3,13 +3,20 @@
     <v-col style="justify-content: center;">
       <v-row>
         <v-card elevation="5" width="100%" justify="center">
-          <v-sheet height="300">
+          <v-sheet >
 
-            <v-img cover src="src\assets\test.jpg"></v-img>
+            <v-img cover width="500" :src="'http://localhost:8000'+info.logo"></v-img>
           </v-sheet>
           <v-card-title>{{ info.bank_name }}</v-card-title>
           <v-card-subtitle > {{ info.website }}</v-card-subtitle>
           <v-card-subtitle > {{ info.contact_number }}</v-card-subtitle>
+          <v-sheet>
+            <v-list>
+              <v-list-item v-for="branch in info.branches">
+                <v-list-item-title>{{ branch.branch_name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-sheet>
 
         </v-card>
       </v-row>

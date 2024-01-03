@@ -12,9 +12,6 @@ from datetime import *
 from .models import *
 from .serializers import *
 from django.http import JsonResponse
-from .forms import LoginForm, RegisterForm
-
-import logging
 
 
 def get_csrf_token(request):
@@ -33,7 +30,8 @@ class BankViewSet(viewsets.ModelViewSet):
     search_fields = ['bank_name']
 
     def getBanks(self,request):
-        banks = bank.objects.all()
+        
+        banks = bank.objects.prefetch_related('branches').all()
         serializer = BankSerializer(banks,many=True)
         return Response(serializer.data)
 

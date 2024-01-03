@@ -5,16 +5,23 @@ class bank(models.Model):
     bank_name = models.CharField(max_length=250, null=False, default="-")
     website = models.CharField(max_length=250,null=False, default="N/A")
     contact_number = models.CharField(max_length=15,null=False, default="000-000-0000")
+    logo = models.ImageField(upload_to="banks/", default="default/default_bank.png")
+    
+    def __str__(self):
+        return self.bank_name
     pass
 
 class branch(models.Model):
-    bank_id=models.ForeignKey(bank, on_delete=models.CASCADE,db_column='bank_id')
+    bank_id=models.ForeignKey(bank, on_delete=models.CASCADE,db_column='bank_id',related_name='branches')
     branch_id = models.AutoField(primary_key=True, unique=True)
     branch_name = models.CharField(max_length=200, null=False)
     location = models.CharField(max_length=200, null=False)
     branch_contact_number = models.CharField(max_length=15, null=False)
     opening_hour = models.TimeField(null=False)
     closing_hour = models.TimeField(null=False)
+    
+    def __str__(self):
+        return str(self.bank_id)+ " " +self.branch_name
 
 class source_currency(models.Model):
     source_currency_id = models.AutoField(primary_key=True,unique=True)
