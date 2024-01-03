@@ -182,6 +182,50 @@ class SourceCurrencyViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+        
+
+class TargetCurrencyViewSet(viewsets.ModelViewSet):
+    queryset = target_currency.objects.all()
+    serializer_class = TargetCurrencySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getTargetCurrency(self,request):
+        target_currencies = target_currency.objects.all()
+        serializer = TargetCurrencySerializer(target_currencies, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def getTargetCurrencyById(self, request, PK=None):
+        target_currencies = target_currency.objects.get(pk=PK)
+        serializer = TargetCurrencySerializer(target_currencies, context={'request': request})
+        return Response(serializer.data)
+    
+    def createTargetCurrency(self, request):
+        new_target_currency = target_currency(
+            currency_code=request.data.get("currency_code"), 
+            currency_name=request.data.get("currency_name"))
+        try:
+            new_target_currency.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def updateTargetCurrency(self, request, PK):
+        updated_target_currency = target_currency.objects.get(pk=PK)
+        updated_target_currency.currency_code = request.data.get('currency_code')
+        updated_target_currency.currency_name = request.data.get('currency_name')
+        try:
+            updated_target_currency.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteTargetCurrency(self, request, PK=None):
+        deleted_target_currency = target_currency.objects.get(pk=PK)
+        try:
+            deleted_target_currency.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
 class UserViewSet(viewsets.ModelViewSet):

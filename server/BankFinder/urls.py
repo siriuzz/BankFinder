@@ -28,6 +28,12 @@ urlpatterns = [
     path('source_currency/update/<int:PK>', SourceCurrencyViewSet.as_view({'patch': 'updateSourceCurrency'}), name='source-currency-update'),
     path('source_currency/delete/<int:PK>', SourceCurrencyViewSet.as_view({'delete': 'deleteSourceCurrency'}), name='source-currency-elimination'),
 
+    path('target_currency/', TargetCurrencyViewSet.as_view({'get': 'getTargetCurrency'}), name='target-currency-list'),
+    path('target_currency/<int:PK>', TargetCurrencyViewSet.as_view({'get': 'getTargetCurrencyById'}), name='target-currency-detail'),
+    path('target_currency/create', TargetCurrencyViewSet.as_view({'post': 'createTargetCurrency'}), name='target-currency-creation'),
+    path('target_currency/update/<int:PK>', TargetCurrencyViewSet.as_view({'patch': 'updateTargetCurrency'}), name='target-currency-update'),
+    path('target_currency/delete/<int:PK>', TargetCurrencyViewSet.as_view({'delete': 'deleteTargetCurrency'}), name='target-currency-elimination'),
+
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
