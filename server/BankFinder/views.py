@@ -65,7 +65,7 @@ class BankViewSet(viewsets.ModelViewSet):
             new_Bank.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status':'failed', 'error':e}, status=401)
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateBank(self, request, PK):
         updated_Bank = bank.objects.get(pk=PK)
@@ -76,7 +76,7 @@ class BankViewSet(viewsets.ModelViewSet):
             updated_Bank.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status':'failed', 'error':e}, status=401)
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def deleteBank(self, request, PK=None):
         deleted_Bank = bank.objects.get(pk=PK)
@@ -84,7 +84,7 @@ class BankViewSet(viewsets.ModelViewSet):
             deleted_Bank.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status':'failed', 'error':e}, status=401)
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
         
 
 
@@ -116,7 +116,7 @@ class BranchViewSet(viewsets.ModelViewSet):
             new_Branch.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status':'failed', 'error':e}, status=401)
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateBranch(self, request, PK):
         updated_Branch = branch.objects.get(pk=PK)
@@ -137,7 +137,51 @@ class BranchViewSet(viewsets.ModelViewSet):
             deleted_Branch.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status':'failed', 'error':e}, status=401)
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+       
+
+class SourceCurrencyViewSet(viewsets.ModelViewSet):
+    queryset = source_currency.objects.all()
+    serializer_class = SourceCurrencySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getSourceCurrency(self,request):
+        source_currencies = source_currency.objects.all()
+        serializer = SourceCurrencySerializer(source_currencies, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def getSourceCurrencyById(self, request, PK=None):
+        source_currencies = source_currency.objects.get(pk=PK)
+        serializer = SourceCurrencySerializer(source_currencies, context={'request': request})
+        return Response(serializer.data)
+    
+    def createSourceCurrency(self, request):
+        new_source_currency = source_currency(
+            currency_code=request.data.get("currency_code"), 
+            currency_name=request.data.get("currency_name"))
+        try:
+            new_source_currency.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def updateSourceCurrency(self, request, PK):
+        updated_source_currency = source_currency.objects.get(pk=PK)
+        updated_source_currency.currency_code = request.data.get('currency_code')
+        updated_source_currency.currency_name = request.data.get('currency_name')
+        try:
+            updated_source_currency.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteSourceCurrency(self, request, PK=None):
+        deleted_source_currency = source_currency.objects.get(pk=PK)
+        try:
+            deleted_source_currency.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -173,7 +217,7 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
-            return JsonResponse({'status': 'failure', 'error': e}, status=401)
+            return JsonResponse({'status': 'failure', 'error': str(e)}, status=401)
 
     def check_auth(self,request):
         try:
@@ -182,14 +226,14 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 return Response({'auth':False})
         except Exception as e:
-            return Response({'error', e},status=500)
+            return Response({'error', str(e)},status=500)
 
     def logout(self,request):
         try:
             logout(request)
             return Response({'status':'success'})
         except Exception as e:
-            return Response({'error', e})
+            return Response({'error', str(e)})
 
 
 

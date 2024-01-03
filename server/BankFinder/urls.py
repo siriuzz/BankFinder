@@ -22,6 +22,12 @@ urlpatterns = [
     path('branches/delete/<int:PK>', BranchViewSet.as_view({'delete': 'deleteBranch'}), name='branch-elimination'),
     path('branches/update/<int:PK>', BranchViewSet.as_view({'patch': 'updateBranch'}), name='branch-update'),
 
+    path('source_currency/', SourceCurrencyViewSet.as_view({'get': 'getSourceCurrency'}), name='source-currency-list'),
+    path('source_currency/<int:PK>', SourceCurrencyViewSet.as_view({'get': 'getSourceCurrencyById'}), name='source-currency-detail'),
+    path('source_currency/create', SourceCurrencyViewSet.as_view({'post': 'createSourceCurrency'}), name='source-currency-creation'),
+    path('source_currency/update/<int:PK>', SourceCurrencyViewSet.as_view({'patch': 'updateSourceCurrency'}), name='source-currency-update'),
+    path('source_currency/delete/<int:PK>', SourceCurrencyViewSet.as_view({'delete': 'deleteSourceCurrency'}), name='source-currency-elimination'),
+
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
