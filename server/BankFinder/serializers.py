@@ -15,12 +15,12 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
 class SourceCurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=source_currency
-        fields=['currency_code','currency_name']
+        fields=['source_currency_id','currency_code','currency_name']
         
 class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model=target_currency
-        fields=['currency_code','currency_name']
+        fields=['target_currency_id','currency_code','currency_name']
 
 class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

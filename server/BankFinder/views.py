@@ -60,27 +60,28 @@ class BankViewSet(viewsets.ModelViewSet):
           return Response({'error':'No search query provided'})
     
     def createBank(self, request):
-        new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
         try:
+            new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
             new_Bank.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateBank(self, request, PK):
-        updated_Bank = bank.objects.get(pk=PK)
-        updated_Bank.bank_name = request.data.get("bank_name")
-        updated_Bank.website = request.data.get("website")
-        updated_Bank.contact_number = request.data.get("contact_number")
         try:
+            updated_Bank = bank.objects.get(pk=PK)
+            updated_Bank.bank_name = request.data.get("bank_name")
+            updated_Bank.website = request.data.get("website")
+            updated_Bank.contact_number = request.data.get("contact_number")
+
             updated_Bank.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def deleteBank(self, request, PK=None):
-        deleted_Bank = bank.objects.get(pk=PK)
         try:
+            deleted_Bank = bank.objects.get(pk=PK)
             deleted_Bank.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
@@ -104,36 +105,38 @@ class BranchViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def createBranch(self, request):
-        Bank_id = bank.objects.get(pk=request.data.get("bank_id"))
-        new_Branch = branch(
-            bank_id=Bank_id,
-            branch_name=request.data.get("branch_name"), 
-            location=request.data.get("location"), 
-            branch_contact_number=request.data.get("branch_contact_number"),
-            opening_hour=request.data.get("opening_hour"),
-            closing_hour=request.data.get("closing_hour"))
         try:
+            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
+
+            new_Branch = branch(
+                bank_id=Bank_object,
+                branch_name=request.data.get("branch_name"), 
+                location=request.data.get("location"), 
+                branch_contact_number=request.data.get("branch_contact_number"),
+                opening_hour=request.data.get("opening_hour"),
+                closing_hour=request.data.get("closing_hour"))
+            
             new_Branch.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateBranch(self, request, PK):
-        updated_Branch = branch.objects.get(pk=PK)
-        updated_Branch.branch_name = request.data.get('branch_name')
-        updated_Branch.location = request.data.get('location')
-        updated_Branch.branch_contact_number = request.data.get('branch_contact_number')
-        updated_Branch.opening_hour = request.data.get('opening_hour')
-        updated_Branch.closing_hour = request.data.get('closing_hour')
         try:
+            updated_Branch = branch.objects.get(pk=PK)
+            updated_Branch.branch_name = request.data.get('branch_name')
+            updated_Branch.location = request.data.get('location')
+            updated_Branch.branch_contact_number = request.data.get('branch_contact_number')
+            updated_Branch.opening_hour = request.data.get('opening_hour')
+            updated_Branch.closing_hour = request.data.get('closing_hour')
             updated_Branch.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def deleteBranch(self, request, PK=None):
-        deleted_Branch = branch.objects.get(pk=PK)
         try:
+            deleted_Branch = branch.objects.get(pk=PK)
             deleted_Branch.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
@@ -156,28 +159,29 @@ class SourceCurrencyViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def createSourceCurrency(self, request):
-        new_source_currency = source_currency(
-            currency_code=request.data.get("currency_code"), 
-            currency_name=request.data.get("currency_name"))
         try:
+            new_source_currency = source_currency(
+                currency_code=request.data.get("currency_code"), 
+                currency_name=request.data.get("currency_name"))
+            
             new_source_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateSourceCurrency(self, request, PK):
-        updated_source_currency = source_currency.objects.get(pk=PK)
-        updated_source_currency.currency_code = request.data.get('currency_code')
-        updated_source_currency.currency_name = request.data.get('currency_name')
         try:
+            updated_source_currency = source_currency.objects.get(pk=PK)
+            updated_source_currency.currency_code = request.data.get('currency_code')
+            updated_source_currency.currency_name = request.data.get('currency_name')
             updated_source_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def deleteSourceCurrency(self, request, PK=None):
-        deleted_source_currency = source_currency.objects.get(pk=PK)
         try:
+            deleted_source_currency = source_currency.objects.get(pk=PK)
             deleted_source_currency.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
@@ -200,29 +204,86 @@ class TargetCurrencyViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def createTargetCurrency(self, request):
-        new_target_currency = target_currency(
-            currency_code=request.data.get("currency_code"), 
-            currency_name=request.data.get("currency_name"))
         try:
+            new_target_currency = target_currency(
+                currency_code=request.data.get("currency_code"), 
+                currency_name=request.data.get("currency_name"))
+            
             new_target_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def updateTargetCurrency(self, request, PK):
-        updated_target_currency = target_currency.objects.get(pk=PK)
-        updated_target_currency.currency_code = request.data.get('currency_code')
-        updated_target_currency.currency_name = request.data.get('currency_name')
         try:
+            updated_target_currency = target_currency.objects.get(pk=PK)
+
+            updated_target_currency.currency_code = request.data.get('currency_code')
+            updated_target_currency.currency_name = request.data.get('currency_name')
+
             updated_target_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
     def deleteTargetCurrency(self, request, PK=None):
-        deleted_target_currency = target_currency.objects.get(pk=PK)
         try:
+            deleted_target_currency = target_currency.objects.get(pk=PK)
             deleted_target_currency.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+        
+
+class ExchangeRateViewSet(viewsets.ModelViewSet):
+    queryset = exchange_rate.objects.all()
+    serializer_class = ExchangeRateSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getExchangeRate(self,request):
+        exchange_rates = exchange_rate.objects.all()
+        serializer = ExchangeRateSerializer(exchange_rates, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def getExchangeRateById(self, request, PK=None):
+        exchange_rates = exchange_rate.objects.get(pk=PK)
+        serializer = ExchangeRateSerializer(exchange_rates, context={'request': request})
+        return Response(serializer.data)
+    
+    def createExchangeRate(self, request):
+        try:
+            Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
+            Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
+
+            new_exchange_rate = exchange_rate(
+            source_currency_id=Source_currency_object, 
+            target_currency_id=Target_currency_object, 
+            last_update=datetime(2023, 12, 4, 12, 30, 0, 0)) #request.data.get("last_update"))
+            
+            new_exchange_rate.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def updateExchangeRate(self, request, PK):
+        try:
+            Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
+            Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
+
+            updated_exchange_rate = exchange_rate.objects.get(pk=PK)
+            updated_exchange_rate.source_currency_id = Source_currency_object
+            updated_exchange_rate.target_currency_id = Target_currency_object
+            updated_exchange_rate.last_update = datetime(2023, 12, 4, 12, 30, 0, 0) #request.data.get('last_update')
+
+            updated_exchange_rate.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteExchangeRate(self, request, PK=None):
+        try:
+            deleted_exchange_rate = exchange_rate.objects.get(pk=PK)
+            deleted_exchange_rate.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
