@@ -60,8 +60,8 @@ class BankViewSet(viewsets.ModelViewSet):
           return Response({'error':'No search query provided'})
     
     def createBank(self, request):
+        new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
         try:
-            new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
             new_Bank.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
@@ -258,7 +258,7 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
             new_exchange_rate = exchange_rate(
             source_currency_id=Source_currency_object, 
             target_currency_id=Target_currency_object, 
-            last_update=datetime(2023, 12, 4, 12, 30, 0, 0)) #request.data.get("last_update"))
+            last_update=request.data.get("last_update"))
             
             new_exchange_rate.save()
             return JsonResponse({'status': 'success'}, status=200)
@@ -273,7 +273,7 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
             updated_exchange_rate = exchange_rate.objects.get(pk=PK)
             updated_exchange_rate.source_currency_id = Source_currency_object
             updated_exchange_rate.target_currency_id = Target_currency_object
-            updated_exchange_rate.last_update = datetime(2023, 12, 4, 12, 30, 0, 0) #request.data.get('last_update')
+            updated_exchange_rate.last_update = request.data.get('last_update')
 
             updated_exchange_rate.save()
             return JsonResponse({'status': 'success'}, status=200)
@@ -287,6 +287,8 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+
+
 
 
 class UserViewSet(viewsets.ModelViewSet):

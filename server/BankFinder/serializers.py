@@ -23,6 +23,9 @@ class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
         fields=['target_currency_id','currency_code','currency_name']
 
 class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
+    source_currency_id = serializers.HyperlinkedRelatedField(view_name='source_currency-detail', lookup_url_kwarg='PK', lookup_field='source_currency_id', read_only=True)
+    target_currency_id = serializers.HyperlinkedRelatedField(view_name='target_currency-detail', lookup_url_kwarg='PK', lookup_field='target_currency_id', read_only=True) 
+    
     class Meta:
         model=exchange_rate
         fields=['exchange_rate_id','source_currency_id','target_currency_id','last_update']
