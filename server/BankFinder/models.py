@@ -40,9 +40,7 @@ class exchange_rate(models.Model):
     source_currency_id = models.ForeignKey(source_currency, on_delete=models.CASCADE,null=False, db_column='source_currency_id')
     target_currency_id = models.ForeignKey(target_currency, on_delete=models.CASCADE,null=False, db_column='target_currency_id')
     last_update = models.DateTimeField(null=False)
-    def __str__(self):
-        return self
-    pass
+    
 
 class bank_exchange_rate(models.Model):
     bank_id=models.ForeignKey(bank, on_delete=models.CASCADE, db_column='bank_id')
