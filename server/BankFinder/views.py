@@ -289,6 +289,60 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
+class BankExchangeRateViewSet(viewsets.ModelViewSet):
+    queryset = bank_exchange_rate.objects.all()
+    serializer_class = BankExchangeRateSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getBankExchangeRate(self,request):
+        bank_exchange_rates = bank_exchange_rate.objects.all()
+        serializer = BankExchangeRateSerializer(bank_exchange_rates, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def getBankExchangeRateById(self, request, PK=None):
+        bank_exchange_rates = bank_exchange_rate.objects.get(pk=PK)
+        serializer = BankExchangeRateSerializer(bank_exchange_rates, context={'request': request})
+        return Response(serializer.data)
+    
+    def createBankExchangeRate(self, request):
+        try:
+            Exchange_rate_object = exchange_rate.objects.get(pk=request.data.get("exchange_rate_id"))
+            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
+
+            new_bank_exchange_rate = bank_exchange_rate(
+            exchange_rate_id=Exchange_rate_object, 
+            bank_id=Bank_object,
+            rate=request.data.get("rate"),
+            last_update=request.data.get("last_update"))
+            
+            new_bank_exchange_rate.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def updateBankExchangeRate(self, request, PK):
+        try:
+            Exchange_rate_object = exchange_rate.objects.get(pk=request.data.get("exchange_rate_id"))
+            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
+
+            updated_bank_exchange_rate = bank_exchange_rate.objects.get(pk=PK)
+            updated_bank_exchange_rate.exchange_rate_id = Exchange_rate_object
+            updated_bank_exchange_rate.bank_id = Bank_object
+            updated_bank_exchange_rate.rate = request.data.get('rate')
+            updated_bank_exchange_rate.last_update = request.data.get('last_update')
+
+            updated_bank_exchange_rate.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteBankExchangeRate(self, request, PK=None):
+        try:
+            deleted_bank_exchange_rate = bank_exchange_rate.objects.get(pk=PK)
+            deleted_bank_exchange_rate.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
 class UserViewSet(viewsets.ModelViewSet):

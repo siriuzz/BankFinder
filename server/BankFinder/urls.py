@@ -40,6 +40,12 @@ urlpatterns = [
     path('exchange_rates/update/<int:PK>', ExchangeRateViewSet.as_view({'patch': 'updateExchangeRate'}), name='exchange_rate-update'),
     path('exchange_rates/delete/<int:PK>', ExchangeRateViewSet.as_view({'delete': 'deleteExchangeRate'}), name='exchange_rate-elimination'),
 
+    path('bank_exchange_rates/', BankExchangeRateViewSet.as_view({'get': 'getBankExchangeRate'}), name='bank_exchange_rate-list'),
+    path('bank_exchange_rates/<int:PK>', BankExchangeRateViewSet.as_view({'get': 'getBankExchangeRateById'}), name='bank_exchange_rate-detail'),
+    path('bank_exchange_rates/create', BankExchangeRateViewSet.as_view({'post': 'createBankExchangeRate'}), name='bank_exchange_rate-creation'),
+    path('bank_exchange_rates/update/<int:PK>', BankExchangeRateViewSet.as_view({'patch': 'updateBankExchangeRate'}), name='bank_exchange_rate-update'),
+    path('bank_exchange_rates/delete/<int:PK>', BankExchangeRateViewSet.as_view({'delete': 'deleteBankExchangeRate'}), name='bank_exchange_rate-elimination'),
+
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

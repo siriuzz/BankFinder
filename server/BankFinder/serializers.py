@@ -30,7 +30,11 @@ class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
         model=exchange_rate
         fields=['exchange_rate_id','source_currency_id','target_currency_id','last_update']
 
-class BankExchangeRate(serializers.HyperlinkedModelSerializer):
+class BankExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
+    bank_id = serializers.HyperlinkedRelatedField(view_name='bank-detail', lookup_url_kwarg='PK', lookup_field='bank_id', read_only=True)
+    exchange_rate_id = serializers.HyperlinkedRelatedField(view_name='exchange_rate-detail', lookup_url_kwarg='PK', lookup_field='exchange_rate_id', read_only=True) 
+    rate = serializers.CharField(read_only=False)
+    
     class Meta:
         model=exchange_rate
         fields=['bank_id', 'exchange_rate_id', 'rate', 'last_update']
