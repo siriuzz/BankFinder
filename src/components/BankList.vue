@@ -5,8 +5,8 @@
       <v-row>
         <v-col v-for="bank in banks" :key="bank.bank_id" cols="12" md="3" @click="bankRedirect(bank.bank_id)">
           <v-list-item elevation="5" rounded>
-            <v-card :class="['d-flex flex-column align-center']"  link>
-              <v-img cover width="300" src="src\assets\test.jpg"  />
+            <v-card :class="['d-flex flex-column']" max-height="200" link>
+              <v-img cover max-width="300" max-height="200" :src= "'http://localhost:8000'+bank.logo"/>
               <v-card-title>
                 {{ bank.bank_name }}
               </v-card-title>
