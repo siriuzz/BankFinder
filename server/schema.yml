@@ -3,66 +3,37 @@ info:
   title: ''
   version: 0.0.0
 paths:
-  /api/banks/:
-    get:
-      operationId: api_banks_list
-      description: API endpoint that allows users to be viewed or edited.
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedBankList'
-          description: ''
+  /api/auth/login:
     post:
-      operationId: api_banks_create
-      description: API endpoint that allows users to be viewed or edited.
+      operationId: api_auth_login_create
       tags:
       - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bank'
+              $ref: '#/components/schemas/User'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Bank'
+              $ref: '#/components/schemas/User'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Bank'
+              $ref: '#/components/schemas/User'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bank'
+                $ref: '#/components/schemas/User'
           description: ''
-  /api/banks/{bank_id}:
+  /api/auth/logout/:
     get:
-      operationId: api_banks_retrieve
-      description: API endpoint that allows users to be viewed or edited.
-      parameters:
-      - in: path
-        name: bank_id
-        schema:
-          type: integer
-        description: A unique integer value identifying this bank.
-        required: true
+      operationId: api_auth_logout_retrieve
       tags:
       - api
       security:
@@ -73,24 +44,186 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/register:
+    post:
+      operationId: api_auth_register_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/bank_currency_exchange/:
+    get:
+      operationId: api_bank_currency_exchange_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankCurrencyExchange'
+          description: ''
+  /api/bank_currency_exchange/{PK}:
+    get:
+      operationId: api_bank_currency_exchange_retrieve_2
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankCurrencyExchange'
+          description: ''
+  /api/bank_currency_exchange/create:
+    post:
+      operationId: api_bank_currency_exchange_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankCurrencyExchange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BankCurrencyExchange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BankCurrencyExchange'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankCurrencyExchange'
+          description: ''
+  /api/bank_currency_exchange/delete/{PK}:
+    delete:
+      operationId: api_bank_currency_exchange_delete_destroy
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/bank_currency_exchange/update/{PK}:
+    patch:
+      operationId: api_bank_currency_exchange_update_partial_update
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBankCurrencyExchange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBankCurrencyExchange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBankCurrencyExchange'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankCurrencyExchange'
+          description: ''
+  /api/banks/:
+    get:
+      operationId: api_banks_retrieve
+      description: API endpoint that allows users to be viewed or edited.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Bank'
           description: ''
-  /api/banks/{bank_id}/:
+  /api/banks/{PK}:
     get:
       operationId: api_banks_retrieve_2
       description: API endpoint that allows users to be viewed or edited.
       parameters:
       - in: path
-        name: bank_id
+        name: PK
         schema:
           type: integer
-        description: A unique integer value identifying this bank.
         required: true
       tags:
       - api
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -98,16 +231,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bank'
           description: ''
-    put:
-      operationId: api_banks_update
+  /api/banks/create:
+    post:
+      operationId: api_banks_create_create
       description: API endpoint that allows users to be viewed or edited.
-      parameters:
-      - in: path
-        name: bank_id
-        schema:
-          type: integer
-        description: A unique integer value identifying this bank.
-        required: true
       tags:
       - api
       requestBody:
@@ -124,6 +251,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -131,57 +259,332 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bank'
           description: ''
-    patch:
-      operationId: api_banks_partial_update
-      description: API endpoint that allows users to be viewed or edited.
-      parameters:
-      - in: path
-        name: bank_id
-        schema:
-          type: integer
-        description: A unique integer value identifying this bank.
-        required: true
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedBank'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedBank'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedBank'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Bank'
-          description: ''
+  /api/banks/delete/{PK}:
     delete:
-      operationId: api_banks_destroy
+      operationId: api_banks_delete_destroy
       description: API endpoint that allows users to be viewed or edited.
       parameters:
       - in: path
-        name: bank_id
+        name: PK
         schema:
           type: integer
-        description: A unique integer value identifying this bank.
         required: true
       tags:
       - api
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
+  /api/banks/filter/{bank_name}:
+    get:
+      operationId: api_banks_filter_retrieve
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: bank_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+  /api/banks/update/{PK}:
+    patch:
+      operationId: api_banks_update_partial_update
+      description: API endpoint that allows users to be viewed or edited.
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBank'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+          description: ''
+  /api/branches/:
+    get:
+      operationId: api_branches_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+  /api/branches/{PK}:
+    get:
+      operationId: api_branches_retrieve_2
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+  /api/branches/create:
+    post:
+      operationId: api_branches_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Branch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Branch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Branch'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+  /api/branches/delete/{PK}:
+    delete:
+      operationId: api_branches_delete_destroy
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/branches/update/{PK}:
+    patch:
+      operationId: api_branches_update_partial_update
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBranch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBranch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBranch'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+  /api/currency/:
+    get:
+      operationId: api_currency_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: ''
+  /api/currency/{PK}:
+    get:
+      operationId: api_currency_retrieve_2
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: ''
+  /api/currency/create:
+    post:
+      operationId: api_currency_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Currency'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Currency'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: ''
+  /api/currency/delete/{PK}:
+    delete:
+      operationId: api_currency_delete_destroy
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/currency/update/{PK}:
+    patch:
+      operationId: api_currency_update_partial_update
+      parameters:
+      - in: path
+        name: PK
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCurrency'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCurrency'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCurrency'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: ''
+  /api/is-auth/:
+    get:
+      operationId: api_is_auth_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
   /api/schema/:
     get:
       operationId: api_schema_retrieve
@@ -295,6 +698,7 @@ paths:
           - tr
           - tt
           - udm
+          - ug
           - uk
           - ur
           - uz
@@ -327,6 +731,47 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/user-data/:
+    get:
+      operationId: api_user_data_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/update:
+    patch:
+      operationId: api_user_update_partial_update
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
   /banks/:
     get:
       operationId: banks_list
@@ -338,11 +783,18 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - banks
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -369,6 +821,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -392,6 +845,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -425,6 +879,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -458,6 +913,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -480,6 +936,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -488,6 +945,9 @@ components:
     Bank:
       type: object
       properties:
+        bank_id:
+          type: integer
+          readOnly: true
         bank_name:
           type: string
           maxLength: 250
@@ -497,6 +957,87 @@ components:
         contact_number:
           type: string
           maxLength: 15
+        logo:
+          type: string
+          format: uri
+        branches:
+          type: string
+          readOnly: true
+      required:
+      - bank_id
+      - branches
+    BankCurrencyExchange:
+      type: object
+      properties:
+        bank_id:
+          type: string
+          format: uri
+          readOnly: true
+        currency_id:
+          type: string
+          format: uri
+          readOnly: true
+        buying_at:
+          type: string
+        selling_at:
+          type: string
+        last_update:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - bank_id
+      - buying_at
+      - currency_id
+      - selling_at
+    Branch:
+      type: object
+      properties:
+        bank_id:
+          type: string
+          format: uri
+        branch_id:
+          type: integer
+          readOnly: true
+        branch_name:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 200
+        branch_contact_number:
+          type: string
+          maxLength: 15
+        opening_hour:
+          type: string
+          format: time
+        closing_hour:
+          type: string
+          format: time
+      required:
+      - bank_id
+      - branch_contact_number
+      - branch_id
+      - branch_name
+      - closing_hour
+      - location
+      - opening_hour
+    Currency:
+      type: object
+      properties:
+        currency_id:
+          type: integer
+          readOnly: true
+        currency_code:
+          type: string
+          maxLength: 3
+        currency_name:
+          type: string
+          maxLength: 150
+      required:
+      - currency_code
+      - currency_id
+      - currency_name
     PaginatedBankList:
       type: object
       properties:
@@ -520,6 +1061,9 @@ components:
     PatchedBank:
       type: object
       properties:
+        bank_id:
+          type: integer
+          readOnly: true
         bank_name:
           type: string
           maxLength: 250
@@ -529,6 +1073,116 @@ components:
         contact_number:
           type: string
           maxLength: 15
+        logo:
+          type: string
+          format: uri
+        branches:
+          type: string
+          readOnly: true
+    PatchedBankCurrencyExchange:
+      type: object
+      properties:
+        bank_id:
+          type: string
+          format: uri
+          readOnly: true
+        currency_id:
+          type: string
+          format: uri
+          readOnly: true
+        buying_at:
+          type: string
+        selling_at:
+          type: string
+        last_update:
+          type: string
+          format: date-time
+          nullable: true
+    PatchedBranch:
+      type: object
+      properties:
+        bank_id:
+          type: string
+          format: uri
+        branch_id:
+          type: integer
+          readOnly: true
+        branch_name:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 200
+        branch_contact_number:
+          type: string
+          maxLength: 15
+        opening_hour:
+          type: string
+          format: time
+        closing_hour:
+          type: string
+          format: time
+    PatchedCurrency:
+      type: object
+      properties:
+        currency_id:
+          type: integer
+          readOnly: true
+        currency_code:
+          type: string
+          maxLength: 3
+        currency_name:
+          type: string
+          maxLength: 150
+    PatchedUser:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - password
+      - username
   securitySchemes:
     basicAuth:
       type: http

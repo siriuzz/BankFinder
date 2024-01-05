@@ -19,30 +19,36 @@ class BankSerializer(serializers.HyperlinkedModelSerializer):
         branch_serializer = BranchSerializer(branches, many=True, context={'request': self.context.get('request')})
         return branch_serializer.data
         
-class SourceCurrencySerializer(serializers.HyperlinkedModelSerializer):
+class CurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model=source_currency
-        fields=['source_currency_id','currency_code','currency_name']
+        model=currency
+        fields=['currency_id','currency_code','currency_name']
         
-class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model=target_currency
-        fields=['target_currency_id','currency_code','currency_name']
+# class TargetCurrencySerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model=target_currency
+#         fields=['target_currency_id','currency_code','currency_name']
 
-class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
-    source_currency_id = serializers.HyperlinkedRelatedField(view_name='source_currency-detail', lookup_url_kwarg='PK', lookup_field='source_currency_id', read_only=True)
-    target_currency_id = serializers.HyperlinkedRelatedField(view_name='target_currency-detail', lookup_url_kwarg='PK', lookup_field='target_currency_id', read_only=True) 
+# class ExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
+#     source_currency_id = serializers.HyperlinkedRelatedField(view_name='source_currency-detail', lookup_url_kwarg='PK', lookup_field='source_currency_id', read_only=True)
+#     target_currency_id = serializers.HyperlinkedRelatedField(view_name='target_currency-detail', lookup_url_kwarg='PK', lookup_field='target_currency_id', read_only=True) 
     
-    class Meta:
-        model=exchange_rate
-        fields=['exchange_rate_id','source_currency_id','target_currency_id','last_update']
+#     class Meta:
+#         model=exchange_rate
+#         fields=['exchange_rate_id','source_currency_id','target_currency_id','last_update']
 
-class BankExchangeRateSerializer(serializers.HyperlinkedModelSerializer):
+class BankCurrencyExchangeSerializer(serializers.HyperlinkedModelSerializer):
     bank_id = serializers.HyperlinkedRelatedField(view_name='bank-detail', lookup_url_kwarg='PK', lookup_field='bank_id', read_only=True)
-    exchange_rate_id = serializers.HyperlinkedRelatedField(view_name='exchange_rate-detail', lookup_url_kwarg='PK', lookup_field='exchange_rate_id', read_only=True) 
-    rate = serializers.CharField(read_only=False)
-    
+    currency_id = serializers.HyperlinkedRelatedField(view_name='currency-detail', lookup_url_kwarg='PK', lookup_field='currency_id', read_only=True) 
+    buying_at = serializers.CharField(read_only=False)
+    selling_at = serializers.CharField(read_only=False)
     class Meta:
-        model=exchange_rate
-        fields=['bank_id', 'exchange_rate_id', 'rate', 'last_update']
+        model=bank_currency_exchange
+        fields=['bank_id', 'currency_id', 'buying_at', 'selling_at', 'last_update']
+        
+        
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields=['username','password','email','first_name','last_name']
         

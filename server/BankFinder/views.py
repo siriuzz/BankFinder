@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAut
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
 from datetime import *
+from django.contrib.sessions.models import Session
 
 from .models import *
 from .serializers import *
@@ -30,7 +31,6 @@ class BankViewSet(viewsets.ModelViewSet):
     search_fields = ['bank_name']
 
     def getBanks(self,request):
-        
         banks = bank.objects.prefetch_related('branches').all()
         serializer = BankSerializer(banks,many=True)
         return Response(serializer.data)
@@ -141,212 +141,215 @@ class BranchViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
        
 
-class SourceCurrencyViewSet(viewsets.ModelViewSet):
-    queryset = source_currency.objects.all()
-    serializer_class = SourceCurrencySerializer
+class CurrencyViewSet(viewsets.ModelViewSet):
+    queryset = currency.objects.all()
+    serializer_class = CurrencySerializer
     permission_classes = [permissions.AllowAny]
 
-    def getSourceCurrency(self,request):
-        source_currencies = source_currency.objects.all()
-        serializer = SourceCurrencySerializer(source_currencies, many=True, context={'request': request})
+    def getCurrency(self,request):
+        source_currencies = currency.objects.all()
+        serializer = CurrencySerializer(source_currencies, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getSourceCurrencyById(self, request, PK=None):
-        source_currencies = source_currency.objects.get(pk=PK)
-        serializer = SourceCurrencySerializer(source_currencies, context={'request': request})
+    def getCurrencyById(self, request, PK=None):
+        source_currencies = currency.objects.get(pk=PK)
+        serializer = CurrencySerializer(source_currencies, context={'request': request})
         return Response(serializer.data)
     
-    def createSourceCurrency(self, request):
+    def createCurrency(self, request):
         try:
-            new_source_currency = source_currency(
+            new_currency = currency(
                 currency_code=request.data.get("currency_code"), 
                 currency_name=request.data.get("currency_name"))
             
-            new_source_currency.save()
+            new_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateSourceCurrency(self, request, PK):
+    def updateCurrency(self, request, PK):
         try:
-            updated_source_currency = source_currency.objects.get(pk=PK)
-            updated_source_currency.currency_code = request.data.get('currency_code')
-            updated_source_currency.currency_name = request.data.get('currency_name')
-            updated_source_currency.save()
+            updated_currency = currency.objects.get(pk=PK)
+            updated_currency.currency_code = request.data.get('currency_code')
+            updated_currency.currency_name = request.data.get('currency_name')
+            updated_currency.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteSourceCurrency(self, request, PK=None):
+    def deleteCurrency(self, request, PK=None):
         try:
-            deleted_source_currency = source_currency.objects.get(pk=PK)
-            deleted_source_currency.delete()
+            deleted_currency = currency.objects.get(pk=PK)
+            deleted_currency.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
         
 
-class TargetCurrencyViewSet(viewsets.ModelViewSet):
-    queryset = target_currency.objects.all()
-    serializer_class = TargetCurrencySerializer
-    permission_classes = [permissions.AllowAny]
+# class TargetCurrencyViewSet(viewsets.ModelViewSet):
+#     queryset = target_currency.objects.all()
+#     serializer_class = TargetCurrencySerializer
+#     permission_classes = [permissions.AllowAny]
 
-    def getTargetCurrency(self,request):
-        target_currencies = target_currency.objects.all()
-        serializer = TargetCurrencySerializer(target_currencies, many=True, context={'request': request})
-        return Response(serializer.data)
+#     def getTargetCurrency(self,request):
+#         target_currencies = target_currency.objects.all()
+#         serializer = TargetCurrencySerializer(target_currencies, many=True, context={'request': request})
+#         return Response(serializer.data)
 
-    def getTargetCurrencyById(self, request, PK=None):
-        target_currencies = target_currency.objects.get(pk=PK)
-        serializer = TargetCurrencySerializer(target_currencies, context={'request': request})
-        return Response(serializer.data)
+#     def getTargetCurrencyById(self, request, PK=None):
+#         target_currencies = target_currency.objects.get(pk=PK)
+#         serializer = TargetCurrencySerializer(target_currencies, context={'request': request})
+#         return Response(serializer.data)
     
-    def createTargetCurrency(self, request):
-        try:
-            new_target_currency = target_currency(
-                currency_code=request.data.get("currency_code"), 
-                currency_name=request.data.get("currency_name"))
+#     def createTargetCurrency(self, request):
+#         try:
+#             new_target_currency = target_currency(
+#                 currency_code=request.data.get("currency_code"), 
+#                 currency_name=request.data.get("currency_name"))
             
-            new_target_currency.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#             new_target_currency.save()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateTargetCurrency(self, request, PK):
-        try:
-            updated_target_currency = target_currency.objects.get(pk=PK)
+#     def updateTargetCurrency(self, request, PK):
+#         try:
+#             updated_target_currency = target_currency.objects.get(pk=PK)
 
-            updated_target_currency.currency_code = request.data.get('currency_code')
-            updated_target_currency.currency_name = request.data.get('currency_name')
+#             updated_target_currency.currency_code = request.data.get('currency_code')
+#             updated_target_currency.currency_name = request.data.get('currency_name')
 
-            updated_target_currency.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#             updated_target_currency.save()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteTargetCurrency(self, request, PK=None):
-        try:
-            deleted_target_currency = target_currency.objects.get(pk=PK)
-            deleted_target_currency.delete()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#     def deleteTargetCurrency(self, request, PK=None):
+#         try:
+#             deleted_target_currency = target_currency.objects.get(pk=PK)
+#             deleted_target_currency.delete()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
         
 
-class ExchangeRateViewSet(viewsets.ModelViewSet):
-    queryset = exchange_rate.objects.all()
-    serializer_class = ExchangeRateSerializer
-    permission_classes = [permissions.AllowAny]
+# class CurrencyExchangeViewSet(viewsets.ModelViewSet):
+#     queryset = exchange_rate.objects.all()
+#     serializer_class = ExchangeRateSerializer
+#     permission_classes = [permissions.AllowAny]
 
-    def getExchangeRate(self,request):
-        exchange_rates = exchange_rate.objects.all()
-        serializer = ExchangeRateSerializer(exchange_rates, many=True, context={'request': request})
-        return Response(serializer.data)
+#     def getExchangeRate(self,request):
+#         exchange_rates = exchange_rate.objects.all()
+#         serializer = ExchangeRateSerializer(exchange_rates, many=True, context={'request': request})
+#         return Response(serializer.data)
 
-    def getExchangeRateById(self, request, PK=None):
-        exchange_rates = exchange_rate.objects.get(pk=PK)
-        serializer = ExchangeRateSerializer(exchange_rates, context={'request': request})
-        return Response(serializer.data)
+#     def getExchangeRateById(self, request, PK=None):
+#         exchange_rates = exchange_rate.objects.get(pk=PK)
+#         serializer = ExchangeRateSerializer(exchange_rates, context={'request': request})
+#         return Response(serializer.data)
     
-    def createExchangeRate(self, request):
-        try:
-            Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
-            Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
+#     def createExchangeRate(self, request):
+#         try:
+#             Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
+#             Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
 
-            new_exchange_rate = exchange_rate(
-            source_currency_id=Source_currency_object, 
-            target_currency_id=Target_currency_object, 
-            last_update=request.data.get("last_update"))
+#             new_exchange_rate = exchange_rate(
+#             source_currency_id=Source_currency_object, 
+#             target_currency_id=Target_currency_object, 
+#             last_update=request.data.get("last_update"))
             
-            new_exchange_rate.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#             new_exchange_rate.save()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateExchangeRate(self, request, PK):
-        try:
-            Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
-            Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
+#     def updateExchangeRate(self, request, PK):
+#         try:
+#             Source_currency_object = source_currency.objects.get(pk=request.data.get("source_currency_id"))
+#             Target_currency_object = target_currency.objects.get(pk=request.data.get("target_currency_id"))
 
-            updated_exchange_rate = exchange_rate.objects.get(pk=PK)
-            updated_exchange_rate.source_currency_id = Source_currency_object
-            updated_exchange_rate.target_currency_id = Target_currency_object
-            updated_exchange_rate.last_update = request.data.get('last_update')
+#             updated_exchange_rate = exchange_rate.objects.get(pk=PK)
+#             updated_exchange_rate.source_currency_id = Source_currency_object
+#             updated_exchange_rate.target_currency_id = Target_currency_object
+#             updated_exchange_rate.last_update = request.data.get('last_update')
 
-            updated_exchange_rate.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#             updated_exchange_rate.save()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteExchangeRate(self, request, PK=None):
-        try:
-            deleted_exchange_rate = exchange_rate.objects.get(pk=PK)
-            deleted_exchange_rate.delete()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+#     def deleteExchangeRate(self, request, PK=None):
+#         try:
+#             deleted_exchange_rate = exchange_rate.objects.get(pk=PK)
+#             deleted_exchange_rate.delete()
+#             return JsonResponse({'status': 'success'}, status=200)
+#         except Exception as e:
+#             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
-class BankExchangeRateViewSet(viewsets.ModelViewSet):
-    queryset = bank_exchange_rate.objects.all()
-    serializer_class = BankExchangeRateSerializer
+class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
+    queryset = bank_currency_exchange.objects.all()
+    serializer_class = BankCurrencyExchangeSerializer
     permission_classes = [permissions.AllowAny]
 
-    def getBankExchangeRate(self,request):
-        bank_exchange_rates = bank_exchange_rate.objects.all()
-        serializer = BankExchangeRateSerializer(bank_exchange_rates, many=True, context={'request': request})
+    def getBankCurrencyExchange(self,request):
+        bank_currency_exchanges = bank_currency_exchange.objects.all()
+        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getBankExchangeRateById(self, request, PK=None):
-        bank_exchange_rates = bank_exchange_rate.objects.get(pk=PK)
-        serializer = BankExchangeRateSerializer(bank_exchange_rates, context={'request': request})
+    def getBankCurrencyExchangeById(self, request, PK=None):
+        bank_currency_exchanges = bank_currency_exchange.objects.get(pk=PK)
+        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, context={'request': request})
         return Response(serializer.data)
     
-    def createBankExchangeRate(self, request):
+    def createBankCurrencyExchange(self, request):
         try:
-            Exchange_rate_object = exchange_rate.objects.get(pk=request.data.get("exchange_rate_id"))
+            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
             Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
 
-            new_bank_exchange_rate = bank_exchange_rate(
-            exchange_rate_id=Exchange_rate_object, 
+            new_bank_currency_exchange = bank_currency_exchange(
+            currency_id=currency_object, 
             bank_id=Bank_object,
-            rate=request.data.get("rate"),
+            buying_at=request.data.get("buying_at"),
+            selling_at=request.data.get("selling_at"),
             last_update=request.data.get("last_update"))
             
-            new_bank_exchange_rate.save()
+            new_bank_currency_exchange.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateBankExchangeRate(self, request, PK):
+    def updateBankCurrencyExchange(self, request, PK):
         try:
-            Exchange_rate_object = exchange_rate.objects.get(pk=request.data.get("exchange_rate_id"))
+            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
             Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
 
-            updated_bank_exchange_rate = bank_exchange_rate.objects.get(pk=PK)
-            updated_bank_exchange_rate.exchange_rate_id = Exchange_rate_object
-            updated_bank_exchange_rate.bank_id = Bank_object
-            updated_bank_exchange_rate.rate = request.data.get('rate')
-            updated_bank_exchange_rate.last_update = request.data.get('last_update')
+            updated_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
+            updated_bank_currency_exchange.currency_id = currency_object
+            updated_bank_currency_exchange.bank_id = Bank_object
+            updated_bank_currency_exchange.buying_at = request.data.get('buying_at')
+            updated_bank_currency_exchange.selling_at = request.data.get('selling_at')
+            updated_bank_currency_exchange.last_update = request.data.get('last_update')
 
-            updated_bank_exchange_rate.save()
+            updated_bank_currency_exchange.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteBankExchangeRate(self, request, PK=None):
+    def deleteBankCurrencyExchange(self, request, PK=None):
         try:
-            deleted_bank_exchange_rate = bank_exchange_rate.objects.get(pk=PK)
-            deleted_bank_exchange_rate.delete()
+            deleted_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
+            deleted_bank_currency_exchange.delete()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    serializer_class=UserSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
-    http_method_names = ['post','get']
+    http_method_names = ['post','get','patch']
 
     def get_permissions(self):
         """
@@ -366,9 +369,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
         if user is not None:
            login(request,user)
-           return Response({'status': 'success'} )
+           return Response({'result': 'success'},status=200 )
         else:
-           return Response({'status': 'failure'})
+           return Response({'result': 'Usuario o contraseña incorrectos'},status=403)
 
     def register(self, request):
         try:
@@ -393,6 +396,62 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'status':'success'})
         except Exception as e:
             return Response({'error', str(e)})
+        
+    def getUserBySessionId(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if session_id:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                
+                return Response({
+                    "username":user.username,
+                    "email":user.email,
+                    "last_login":user.last_login
+                })
+            except Exception as e:
+                return Response({"error":e})
+        else:
+            return Response("Missing session id")
+        
+    def updateUser(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if request.user.is_authenticated:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                user.username = request.data.get('username',user.username)
+                user.email = request.data.get('email',user.email)
+
+                user.save()
+                
+                return Response({'message':'Usuario actualizado correctamente'})
+            except Exception as e:
+                return Response({'error':e})
+        else:
+            return Response({'message':'El usuario no esta autenticado'})
+        
+    def changePassword(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if request.user.is_authenticated:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                auth = authenticate(request, username = user.username, password = request.data.get('old_password'))
+                if auth is not None:
+                    print(request.data.get("new_password"))
+                    user.set_password(request.data.get("new_password"))
+                    user.save()
+                    return Response({'message':'Contraseña actualizada correctamente'})
+                else:
+                    return Response({'message':'Contraseña anterior incorrecta'})
+            except Exception as e:
+                return Response({'error':e})
+        else:
+            return Response({'message':'El usuario no esta autenticado'})
 
 
 
