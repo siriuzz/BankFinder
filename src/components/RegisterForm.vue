@@ -45,7 +45,7 @@
             },
           );
           // localStorage.setItem('token', response.data.token);
-          if(response.status = 200){
+          if(response.status == 200){
             this.$router.push('/login');
           }
         } catch (error) {

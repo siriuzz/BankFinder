@@ -1,9 +1,9 @@
 <template>
   <v-app-bar :elevation="3">
-    <v-app-bar-title>
-      <v-icon icon="mdi-bank" />
+    <v-app-bar-nav-icon icon="mdi-bank" to="/" /> 
+    <v-app-bar-title @click="this.$router.push('/')">
 
-      BankFinder
+        BankFinder
     </v-app-bar-title>
     <v-spacer></v-spacer>
 
@@ -11,10 +11,13 @@
       Log in
     </v-btn>
 
-    <v-btn v-if="!this.is_logged" button to="/register">
+    <v-btn v-if="!this.is_logged" button to="/register" >
       Register
     </v-btn>
     <!-- <v-btn @click="is_logged=!is_logged">togge</v-btn> -->
+    <v-btn v-if="this.is_logged" to="/profile">
+      Perfil
+    </v-btn>
     <v-btn v-if="this.is_logged" @click="logout()">
       Logout
     </v-btn>
@@ -45,11 +48,12 @@ export default {
     },
     async logout() {
       try {
-        const response = await this.$axios.get(
+        await this.$axios.get(
           `http://${import.meta.env.VITE_API_URL}/auth/logout/`
         );
-        
-        this.$router.push('/login')
+
+        this.$router.push('/')
+        window.location.reload();
 
       } catch (error) {
 

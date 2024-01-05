@@ -34,9 +34,7 @@ export default {
   },
   methods:{
     runFetchBanks(){
-      this.loading=true;
       this.$refs.fetchBanksRef.fetchBanks();
-      this.loading=false;
     }
   }
 }

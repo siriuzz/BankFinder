@@ -40,7 +40,7 @@ export default {
     async fetchBanks() {
       try {
         if(this.search){
-          const response = await this.$axios.get(`http://${this.apiUrl}/banks/${this.search}`);
+          const response = await this.$axios.get(`http://${this.apiUrl}/banks/filter/${this.search}`);
           this.banks = response.data.result;
           console.log(response);
 
