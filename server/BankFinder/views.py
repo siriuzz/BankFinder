@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from datetime import *
 from django.contrib.sessions.models import Session
 
+
 from .models import *
 from .serializers import *
 from django.http import JsonResponse
@@ -186,6 +187,192 @@ class CurrencyViewSet(viewsets.ModelViewSet):
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
         
 
+
+
+class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
+    queryset = bank_currency_exchange.objects.all()
+    serializer_class = BankCurrencyExchangeSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def getBankCurrencyExchange(self,request):
+        bank_currency_exchanges = bank_currency_exchange.objects.all()
+        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def getBankCurrencyExchangeById(self, request, PK=None):
+        bank_currency_exchanges = bank_currency_exchange.objects.get(pk=PK)
+        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, context={'request': request})
+        return Response(serializer.data)
+    
+    def createBankCurrencyExchange(self, request):
+        try:
+            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
+            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
+
+            new_bank_currency_exchange = bank_currency_exchange(
+            currency_id=currency_object, 
+            bank_id=Bank_object,
+            buying_at=request.data.get("buying_at"),
+            selling_at=request.data.get("selling_at"),
+            last_update=request.data.get("last_update"))
+            
+            new_bank_currency_exchange.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def updateBankCurrencyExchange(self, request, PK):
+        try:
+            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
+            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
+
+            updated_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
+            updated_bank_currency_exchange.currency_id = currency_object
+            updated_bank_currency_exchange.bank_id = Bank_object
+            updated_bank_currency_exchange.buying_at = request.data.get('buying_at')
+            updated_bank_currency_exchange.selling_at = request.data.get('selling_at')
+            updated_bank_currency_exchange.last_update = request.data.get('last_update')
+
+            updated_bank_currency_exchange.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+    
+    def deleteBankCurrencyExchange(self, request, PK=None):
+        try:
+            deleted_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
+            deleted_bank_currency_exchange.delete()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class=UserSerializer
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    http_method_names = ['post','get','patch']
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'login' or self.action == 'register' or self.action =='check_auth':
+           # Solo para esta vista, permitimos el acceso a cualquier usuario
+           return [AllowAny()]
+        return super().get_permissions()
+    
+    # @authentication_classes([])
+    # @permission_classes([AllowAny])
+    def login(self,request):
+
+        user = authenticate(request,username = request.data.get('username'),password= request.data.get('password'))
+
+        if user is not None:
+           login(request,user)
+           return Response({'result': 'success'},status=200 )
+        else:
+           return Response({'result': 'Usuario o contraseña incorrectos'},status=403)
+
+    def register(self, request):
+        try:
+            user = User.objects.create_user(username = request.data.get('username'), password = request.data.get('password'))
+            user.first_name = request.data.get('first_name')
+            user.last_name = request.data.get('last_name')
+            
+            user.save()
+            login(request,user)
+            return Response({'status': 'success'}, status=200)
+        except Exception as e:
+            return Response({'status': 'failure', 'error': e}, status=401)
+
+    def check_auth(self,request):
+        try:
+            if request.user.is_authenticated:
+                return Response({'auth':True},status=200)
+            else:
+                return Response({'auth':False})
+        except Exception as e:
+            return Response({'error', str(e)},status=500)
+
+    def logout(self,request):
+        try:
+            logout(request)
+            return Response({'status':'success'})
+        except Exception as e:
+            return Response({'error', str(e)})
+        
+    def getUserBySessionId(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if session_id:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                
+                return Response({
+                    "username":user.username,
+                    "first_name":user.first_name,
+                    "last_name":user.last_name,
+                    "last_login":user.last_login
+                })
+            except Exception as e:
+                return Response({"error":e})
+        else:
+            return Response("Missing session id")
+        
+    def updateUser(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if request.user.is_authenticated:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                user.username = request.data.get('username',user.username)
+                user.email = request.data.get('email',user.email)
+                user.first_name = request.data.get('first_name',user.first_name)
+                user.last_name = request.data.get('last_name',user.last_name)
+
+                user.save()
+                
+                return Response({'message':'Usuario actualizado correctamente'})
+            except Exception as e:
+                return Response({'error':e})
+        else:
+            return Response({'message':'El usuario no esta autenticado'})
+        
+    def changePassword(self,request):
+        session_id = request.COOKIES.get('sessionid')
+        if request.user.is_authenticated:
+            try:
+                session = Session.objects.get(session_key=session_id)
+                user_id = session.get_decoded().get('_auth_user_id')
+                user = User.objects.get(id=user_id)
+                auth = user.check_password(request.data.get('old_password'))
+                if auth is not None:
+                    print(request.data.get("new_password"))
+                    user.set_password(request.data.get("new_password"))
+                    user.save()
+                    return Response({'message':'Contraseña actualizada correctamente'})
+                else:
+                    return Response({'message':'Contraseña anterior incorrecta'})
+            except Exception as e:
+                return Response({'error':e})
+        else:
+            return Response({'message':'El usuario no esta autenticado'})
+
+
+
+
+
+# def testHomepage(request):
+#     return render(request, 'homePage.html', )
+
+
+# def serializerTest(request):
+#     app = bank.objects.all()
+#     serializer = BankSerializer(app, many=True)
+#     return JsonResponse({"banks": serializer.data}, safe=False)
 # class TargetCurrencyViewSet(viewsets.ModelViewSet):
 #     queryset = target_currency.objects.all()
 #     serializer_class = TargetCurrencySerializer
@@ -285,183 +472,3 @@ class CurrencyViewSet(viewsets.ModelViewSet):
 #             return JsonResponse({'status': 'success'}, status=200)
 #         except Exception as e:
 #             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
-
-
-class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
-    queryset = bank_currency_exchange.objects.all()
-    serializer_class = BankCurrencyExchangeSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def getBankCurrencyExchange(self,request):
-        bank_currency_exchanges = bank_currency_exchange.objects.all()
-        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, many=True, context={'request': request})
-        return Response(serializer.data)
-
-    def getBankCurrencyExchangeById(self, request, PK=None):
-        bank_currency_exchanges = bank_currency_exchange.objects.get(pk=PK)
-        serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, context={'request': request})
-        return Response(serializer.data)
-    
-    def createBankCurrencyExchange(self, request):
-        try:
-            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
-            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
-
-            new_bank_currency_exchange = bank_currency_exchange(
-            currency_id=currency_object, 
-            bank_id=Bank_object,
-            buying_at=request.data.get("buying_at"),
-            selling_at=request.data.get("selling_at"),
-            last_update=request.data.get("last_update"))
-            
-            new_bank_currency_exchange.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
-    
-    def updateBankCurrencyExchange(self, request, PK):
-        try:
-            currency_object = currency.objects.get(pk=request.data.get("currency_id"))
-            Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
-
-            updated_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
-            updated_bank_currency_exchange.currency_id = currency_object
-            updated_bank_currency_exchange.bank_id = Bank_object
-            updated_bank_currency_exchange.buying_at = request.data.get('buying_at')
-            updated_bank_currency_exchange.selling_at = request.data.get('selling_at')
-            updated_bank_currency_exchange.last_update = request.data.get('last_update')
-
-            updated_bank_currency_exchange.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
-    
-    def deleteBankCurrencyExchange(self, request, PK=None):
-        try:
-            deleted_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
-            deleted_bank_currency_exchange.delete()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class=UserSerializer
-    queryset = User.objects.all()
-    permission_classes = (IsAuthenticated,)
-    http_method_names = ['post','get','patch']
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'login' or self.action == 'register' or self.action =='check_auth':
-           # Solo para esta vista, permitimos el acceso a cualquier usuario
-           return [AllowAny()]
-        return super().get_permissions()
-    
-    # @authentication_classes([])
-    # @permission_classes([AllowAny])
-    def login(self,request):
-
-        user = authenticate(request,username = request.data.get('username'),password= request.data.get('password'))
-        print('Result of authenticate:', user)
-
-        if user is not None:
-           login(request,user)
-           return Response({'result': 'success'},status=200 )
-        else:
-           return Response({'result': 'Usuario o contraseña incorrectos'},status=403)
-
-    def register(self, request):
-        try:
-            user = User.objects.create_user(request.data.get('username'), request.data.get('email'), request.data.get('password'))
-            user.save()
-            return JsonResponse({'status': 'success'}, status=200)
-        except Exception as e:
-            return JsonResponse({'status': 'failure', 'error': str(e)}, status=401)
-
-    def check_auth(self,request):
-        try:
-            if request.user.is_authenticated:
-                return Response({'auth':True},status=200)
-            else:
-                return Response({'auth':False})
-        except Exception as e:
-            return Response({'error', str(e)},status=500)
-
-    def logout(self,request):
-        try:
-            logout(request)
-            return Response({'status':'success'})
-        except Exception as e:
-            return Response({'error', str(e)})
-        
-    def getUserBySessionId(self,request):
-        session_id = request.COOKIES.get('sessionid')
-        if session_id:
-            try:
-                session = Session.objects.get(session_key=session_id)
-                user_id = session.get_decoded().get('_auth_user_id')
-                user = User.objects.get(id=user_id)
-                
-                return Response({
-                    "username":user.username,
-                    "email":user.email,
-                    "last_login":user.last_login
-                })
-            except Exception as e:
-                return Response({"error":e})
-        else:
-            return Response("Missing session id")
-        
-    def updateUser(self,request):
-        session_id = request.COOKIES.get('sessionid')
-        if request.user.is_authenticated:
-            try:
-                session = Session.objects.get(session_key=session_id)
-                user_id = session.get_decoded().get('_auth_user_id')
-                user = User.objects.get(id=user_id)
-                user.username = request.data.get('username',user.username)
-                user.email = request.data.get('email',user.email)
-
-                user.save()
-                
-                return Response({'message':'Usuario actualizado correctamente'})
-            except Exception as e:
-                return Response({'error':e})
-        else:
-            return Response({'message':'El usuario no esta autenticado'})
-        
-    def changePassword(self,request):
-        session_id = request.COOKIES.get('sessionid')
-        if request.user.is_authenticated:
-            try:
-                session = Session.objects.get(session_key=session_id)
-                user_id = session.get_decoded().get('_auth_user_id')
-                user = User.objects.get(id=user_id)
-                auth = authenticate(request, username = user.username, password = request.data.get('old_password'))
-                if auth is not None:
-                    print(request.data.get("new_password"))
-                    user.set_password(request.data.get("new_password"))
-                    user.save()
-                    return Response({'message':'Contraseña actualizada correctamente'})
-                else:
-                    return Response({'message':'Contraseña anterior incorrecta'})
-            except Exception as e:
-                return Response({'error':e})
-        else:
-            return Response({'message':'El usuario no esta autenticado'})
-
-
-
-
-
-# def testHomepage(request):
-#     return render(request, 'homePage.html', )
-
-
-# def serializerTest(request):
-#     app = bank.objects.all()
-#     serializer = BankSerializer(app, many=True)
-#     return JsonResponse({"banks": serializer.data}, safe=False)
