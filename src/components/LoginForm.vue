@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-center justify-center" style="height: 100vh">
-    <v-sheet width="400" class="mx-auto">
+    <v-sheet width="400" class="mx-auto pa-5" rounded elevation="5" >
       <v-card-title class="text-center text-h4 mb-5">Iniciar sesión</v-card-title>
       <v-form ref="loginForm" @submit.prevent="login" validate-on=" input submit lazy" v-model="valid" :disabled="loading">
         <v-text-field v-model="username" label="Nombre de Usuario" :rules="usernameRules" required></v-text-field>
@@ -29,7 +29,7 @@ export default {
         value => {
           if (value) return true
 
-          return 'Username is required.'
+          return 'Este campo es obligatorio.'
         },
         () => {
           if (this.incorrectCredentials != undefined && this.incorrectCredentials != '')
@@ -39,7 +39,7 @@ export default {
       passwordRules: [
         value => {
           if (value) return true
-          return 'Password is required.'
+          return 'Este campo es obligatorio.'
         },
         () => {
           if (this.incorrectCredentials != undefined && this.incorrectCredentials != '')
