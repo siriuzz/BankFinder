@@ -89,7 +89,7 @@ export default {
             change_password: false,
             old_password: "",
             new_password: "",
-            repeat_password: ""
+            repeat_password: "",
 
         }
     },

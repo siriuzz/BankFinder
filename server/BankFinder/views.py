@@ -257,7 +257,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action == 'login' or self.action == 'register' or self.action =='check_auth':
+        if self.action == 'login' or self.action == 'register' or self.action =='check_auth' or self.action == 'isUsernameTaken':
            # Solo para esta vista, permitimos el acceso a cualquier usuario
            return [AllowAny()]
         return super().get_permissions()
@@ -279,12 +279,11 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.create_user(username = request.data.get('username'), password = request.data.get('password'))
             user.first_name = request.data.get('first_name')
             user.last_name = request.data.get('last_name')
-            
             user.save()
             login(request,user)
             return Response({'status': 'success'}, status=200)
         except Exception as e:
-            return Response({'status': 'failure', 'error': e}, status=401)
+            return Response({'error': str(e)}, status=401)
 
     def check_auth(self,request):
         try:
@@ -361,6 +360,12 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'message':'El usuario no esta autenticado'})
 
+    def isUsernameTaken(self,request):
+        print(request.data.get('username'))
+        if User.objects.filter(username=request.GET.get('username')).exists():
+            return Response({'taken':True})
+        
+        return Response({'taken':False})
 
 
 

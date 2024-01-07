@@ -57,7 +57,8 @@ urlpatterns = [
     path('get_csrf_token/', get_csrf_token, name="get_csrf_token"),
     path('user-data/',UserViewSet.as_view({'get':'getUserBySessionId'})),
     path('user/update',UserViewSet.as_view({'patch':'updateUser'}),name="update_user"),
-    path('user/change_password',UserViewSet.as_view({'patch':'changePassword'}),name='change_password')
+    path('user/change_password',UserViewSet.as_view({'patch':'changePassword'}),name='change_password'),
+    path('user/is-username-taken',UserViewSet.as_view({'get':'isUsernameTaken'}),name='isUsernameTaken')
 ]
 
 urlpatterns += router.urls
