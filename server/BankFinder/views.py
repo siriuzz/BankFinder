@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from datetime import *
 
 from .models import *
@@ -29,33 +30,32 @@ class BankViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['bank_name']
 
-    def getBanks(self,request):
-        
+    def getBanks(self,request, pages=1):
         banks = bank.objects.prefetch_related('branches').all()
-        serializer = BankSerializer(banks,many=True)
+        paginator = Paginator(banks, 10)
+        serializer = BankSerializer(paginator.page(pages).object_list,many=True)
         return Response(serializer.data)
 
     def getBankById(self, request, PK=None):
         bank_obj = bank.objects.get(pk=PK)
-        serializer = BankSerializer(bank_obj)
+        serializer = BankSerializer(bank_obj)   
         print('hola')
         return Response(serializer.data)
     
     def getBankByName(self,request,bank_name):
         if bank_name:
-          filter = bank.objects.filter(bank_name__icontains=bank_name)
-        #   filter = bank.objects.filter(bank_name__istartswith=bank_name)
-        #   filter = bank.objects.filter(bank_name__iendswith=bank_name)
-        #   filter = bank.objects.filter(bank_name__icontains=bank_name)
-        #   filter = bank.objects.filter(bank_name__iexact=bank_name)
-        
-          print(str(filter.query))
-          results = filter.values('bank_name')  # Execute the query
-          print(results)
-          serializer = BankSerializer(filter, many=True)
-          return Response({'result':serializer.data})
+            results = []
+            filter = [bank.objects.filter(bank_name__istartswith=bank_name), 
+                        bank.objects.filter(bank_name__iendswith=bank_name), 
+                        bank.objects.filter(bank_name__icontains=bank_name), 
+                        bank.objects.filter(bank_name__iexact=bank_name)]
+            for r in filter:
+                results.append(r.values('bank_name').)   # Execute the query
+
+
+            return Response({'result':results})
         else:
-          return Response({'error':'No search query provided'})
+            return Response({'error':'No search query provided'})
     
     def createBank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
