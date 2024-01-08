@@ -1,8 +1,9 @@
 <template>
   <div class="d-flex align-center justify-center" style="height: 100vh">
-    <v-sheet width="400" class="mx-auto pa-5" rounded elevation="5" >
+    <v-sheet width="400" class="mx-auto pa-5" rounded elevation="5">
       <v-card-title class="text-center text-h4 mb-5">Iniciar sesión</v-card-title>
-      <v-form ref="loginForm" @submit.prevent="login" validate-on=" input submit lazy" v-model="valid" :disabled="loading">
+      <v-form ref="loginForm" @submit.prevent="login" validate-on=" input submit lazy" v-model="valid"
+        :disabled="loading">
         <v-text-field v-model="username" label="Nombre de Usuario" :rules="usernameRules" required></v-text-field>
         <v-text-field v-model="password" label="Contraseña" type="password" :rules="passwordRules"
           required></v-text-field>
@@ -24,7 +25,7 @@ export default {
       password: '',
       apiUrl: import.meta.env.VITE_API_URL,
       csrfToken: '',
-      incorrectCredentials: "",
+      incorrectCredentials: true,
       usernameRules: [
         value => {
           if (value) return true
@@ -32,7 +33,7 @@ export default {
           return 'Este campo es obligatorio.'
         },
         () => {
-          if (this.incorrectCredentials != undefined && this.incorrectCredentials != '')
+          if (this.incorrectCredentials != '')
             return this.incorrectCredentials
         }
       ],
@@ -42,11 +43,11 @@ export default {
           return 'Este campo es obligatorio.'
         },
         () => {
-          if (this.incorrectCredentials != undefined && this.incorrectCredentials != '')
+          if (this.incorrectCredentials != '')
             return this.incorrectCredentials
+          return true
         }
       ]
-
     };
   },
   methods: {
@@ -64,8 +65,8 @@ export default {
 
     async login() {
       // console.log(localStorage.getItem('csrftoken'))
-      this.loading=true;
-      if(this.loginFlag) this.valid = true;
+      this.loading = true;
+      if (this.loginFlag) this.valid = true;
       if (this.valid) {
         try {
           const response = await this.$axios.post(
@@ -97,7 +98,7 @@ export default {
         }
       }
 
-      this.loading=false;
+      this.loading = false;
 
     }
 
