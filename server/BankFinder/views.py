@@ -257,7 +257,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action == 'login' or self.action == 'register' or self.action =='check_auth':
+        if self.action == 'login' or self.action == 'register' or self.action =='check_auth' or self.action == 'isUsernameTaken':
            # Solo para esta vista, permitimos el acceso a cualquier usuario
            return [AllowAny()]
         return super().get_permissions()
@@ -279,12 +279,11 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.create_user(username = request.data.get('username'), password = request.data.get('password'))
             user.first_name = request.data.get('first_name')
             user.last_name = request.data.get('last_name')
-            
             user.save()
             login(request,user)
             return Response({'status': 'success'}, status=200)
         except Exception as e:
-            return Response({'status': 'failure', 'error': e}, status=401)
+            return Response({'error': str(e)}, status=401)
 
     def check_auth(self,request):
         try:
@@ -349,18 +348,30 @@ class UserViewSet(viewsets.ModelViewSet):
                 user_id = session.get_decoded().get('_auth_user_id')
                 user = User.objects.get(id=user_id)
                 auth = user.check_password(request.data.get('old_password'))
-                if auth is not None:
-                    print(request.data.get("new_password"))
+                authNewPassword = user.check_password(request.data.get('new_password'))
+                print(auth)
+                if auth:
                     user.set_password(request.data.get("new_password"))
                     user.save()
                     return Response({'message':'Contraseña actualizada correctamente'})
+                elif authNewPassword:
+                    return Response({'samePassword':True}, status=401)
                 else:
-                    return Response({'message':'Contraseña anterior incorrecta'})
+                    return Response({'incorrectPassword':True}, status=401)
             except Exception as e:
                 return Response({'error':e})
         else:
             return Response({'message':'El usuario no esta autenticado'})
 
+    def isUsernameTaken(self,request):
+        currentUser = User.objects.get(username=request.user.username)
+        username = request.GET.get('username')
+        print(username)
+        if ((request.user.is_authenticated and username != currentUser) or (not request.user.is_authenticated)):
+            if User.objects.filter(username=request.GET.get('username')).exists():
+                return Response({'taken':True})
+
+        return Response({'taken':False})
 
 
 

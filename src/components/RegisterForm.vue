@@ -2,10 +2,11 @@
   <div class="d-flex align-center justify-center" style="height: 100vh">
     <v-sheet width="400" class="mx-auto">
       <v-card-title>Registrarse</v-card-title>
-      <v-form ref="registerForm" :disabled="loading" @submit.prevent="register" validate-on="input lazy" v-model="valid">
+      <v-form fast-fail ref="registerForm" :disabled="loading" @submit.prevent="register" validate-on="input lazy" v-model="valid">
         <v-text-field v-model="first_name" :rules='requiredRules' label="Nombre"></v-text-field>
         <v-text-field v-model="last_name" :rules='requiredRules' label="Apellido"></v-text-field>
-        <v-text-field v-model="username" :rules='usernameRules' label="Nombre de Usuario"></v-text-field>
+        <v-text-field v-model="username" :rules='usernameRules' @change="checkUsername"
+          label="Nombre de Usuario"></v-text-field>
         <!-- <v-text-field v-model="email" :rules="emailRules" label="Correo electrónico"></v-text-field> -->
 
         <v-text-field v-model="password" :rules="passwordRules" label="Contraseña" type="password"></v-text-field>
@@ -32,6 +33,7 @@ export default {
       repeatPassword: '',
       apiUrl: import.meta.env.VITE_API_URL,
       csrfToken: '',
+      usernameTaken: false,
       requiredRules: [
         value => {
           if (value) return true
@@ -46,6 +48,10 @@ export default {
         value => {
           if (value.length >= 3) return true
           return 'El nombre de usuario debe tener al menos 3 caracteres'
+        },
+        () => {
+          if (!this.usernameTaken) return true
+          return 'El nombre de usuario ya existe'
         }
       ],
       // emailRules: [
@@ -115,8 +121,8 @@ export default {
           const response = await this.$axios.post(
             `http://${this.apiUrl}/auth/register`,
             {
-              first_name:this.first_name,
-              last_name:this.last_name,
+              first_name: this.first_name,
+              last_name: this.last_name,
               username: this.username,
               password: this.password,
             },
@@ -131,6 +137,34 @@ export default {
       }
       this.loading = false
 
+    },
+
+    async checkUsername() {
+      if (this.username != '') {
+        try {
+          const response = await this.$axios.get(
+            `http://${this.apiUrl}/user/is-username-taken`, {
+            params: {
+              username: this.username,
+            },
+          }
+          );
+          console.log(response.data.taken);
+          // localStorage.setItem('token', response.data.token);
+          if (response.data.taken) {
+            this.usernameTaken = true
+            this.$refs.registerForm.resetValidation();
+            this.$refs.registerForm.validate();
+            return
+          } else{
+            this.usernameTaken = false
+            this.$refs.registerForm.resetValidation();
+            this.$refs.registerForm.validate();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
 
 
