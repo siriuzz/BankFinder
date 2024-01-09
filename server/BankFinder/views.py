@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from datetime import *
 from django.contrib.sessions.models import Session
 
@@ -38,25 +39,33 @@ class BankViewSet(viewsets.ModelViewSet):
 
     def getBankById(self, request, PK=None):
         bank_obj = bank.objects.get(pk=PK)
-        serializer = BankSerializer(bank_obj)
+        serializer = BankSerializer(bank_obj)   
         print('hola')
         return Response(serializer.data)
     
-    def getBankByName(self,request,bank_name):
+    def getBankByName(self,request, bank_name, pages=1):
         if bank_name:
-          filter = bank.objects.filter(bank_name__icontains=bank_name)
-        #   filter = bank.objects.filter(bank_name__istartswith=bank_name)
-        #   filter = bank.objects.filter(bank_name__iendswith=bank_name)
-        #   filter = bank.objects.filter(bank_name__icontains=bank_name)
-        #   filter = bank.objects.filter(bank_name__iexact=bank_name)
-        
-          print(str(filter.query))
-          results = filter.values('bank_name')  # Execute the query
-          print(results)
-          serializer = BankSerializer(filter, many=True)
-          return Response({'result':serializer.data})
+            results = []
+            support = []
+            filter = [bank.objects.filter(bank_name__istartswith=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__iendswith=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__icontains=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__iexact=bank_name).values('bank_name')]
+            
+            for i in filter:
+                for j in i:
+                    results.append(j)
+
+            for i in results:
+                support.append(i['bank_name'].lower())
+            
+            results = list(set(support))
+
+            paginator = Paginator(results, 20)
+            
+            return Response({'result': paginator.page(pages).object_list})
         else:
-          return Response({'error':'No search query provided'})
+            return Response({'error':'No search query provided'})
     
     def createBank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
