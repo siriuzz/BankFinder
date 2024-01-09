@@ -348,23 +348,29 @@ class UserViewSet(viewsets.ModelViewSet):
                 user_id = session.get_decoded().get('_auth_user_id')
                 user = User.objects.get(id=user_id)
                 auth = user.check_password(request.data.get('old_password'))
-                if auth is not None:
-                    print(request.data.get("new_password"))
+                authNewPassword = user.check_password(request.data.get('new_password'))
+                print(auth)
+                if auth:
                     user.set_password(request.data.get("new_password"))
                     user.save()
                     return Response({'message':'Contraseña actualizada correctamente'})
+                elif authNewPassword:
+                    return Response({'samePassword':True}, status=401)
                 else:
-                    return Response({'message':'Contraseña anterior incorrecta'})
+                    return Response({'incorrectPassword':True}, status=401)
             except Exception as e:
                 return Response({'error':e})
         else:
             return Response({'message':'El usuario no esta autenticado'})
 
     def isUsernameTaken(self,request):
-        print(request.data.get('username'))
-        if User.objects.filter(username=request.GET.get('username')).exists():
-            return Response({'taken':True})
-        
+        currentUser = User.objects.get(username=request.user.username)
+        username = request.GET.get('username')
+        print(username)
+        if ((request.user.is_authenticated and username != currentUser) or (not request.user.is_authenticated)):
+            if User.objects.filter(username=request.GET.get('username')).exists():
+                return Response({'taken':True})
+
         return Response({'taken':False})
 
 

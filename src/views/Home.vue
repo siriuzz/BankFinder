@@ -8,7 +8,7 @@
       </v-row>
       <v-row style="height: 30rem;">
         <v-sheet color="grey-lighten-5" width="100%"  justify-content="center"  clearable>
-          <v-text-field clearable  @click:append-inner="runFetchBanks"  v-model="search" width="40%" label="Inserta el nombre de algun banco" variant="outlined" append-inner-icon="mdi-magnify" :loading="loading"></v-text-field>
+          <v-text-field clearable  @click:prepend-inner="runFetchBanks"  v-model="search" width="40%" label="Inserta el nombre de algun banco" variant="outlined" prepend-inner-icon="mdi-magnify" :loading="loading"></v-text-field>
           <BankList :search="search" ref="fetchBanksRef"/>
 
         </v-sheet>

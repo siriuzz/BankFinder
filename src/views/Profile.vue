@@ -18,7 +18,7 @@
                             Último inicio de sesión: {{ parseDate }}
                         </v-chip>
                         <v-container class="d-flex justify-space-around">
-                            <v-btn @click="edit_profile=!edit_profile">Editar perfil</v-btn>
+                            <v-btn @click="edit_profile = !edit_profile">Editar perfil</v-btn>
                             <v-btn @click="change_password = !change_password">Cambiar contraseña</v-btn>
                         </v-container>
                     </v-chip-group>
@@ -42,13 +42,14 @@
                             <v-btn>Cambiar contraseña</v-btn>
                         </v-container>
                     </v-chip-group> -->
-                    <v-form fast-fail @submit.prevent @mounted="validateUpdateUserForm" ref="updateUserForm" v-model="updateUserValid" validate-on="input">
+                    <v-form @submit.prevent ref="updateUserForm" v-model="updateUserValid"
+                        validate-on="input">
                         <v-text-field label="Nombre" :rules="required" v-model="user.first_name" clearable
                             density="compact"></v-text-field>
                         <v-text-field label="Apellido" :rules="required" v-model="user.last_name" clearable
                             density="compact"></v-text-field>
-                        <v-text-field label="Nombre de usuario" :rules="usernameRules" v-model="user.username" clearable
-                            density="compact"></v-text-field>
+                        <v-text-field label="Nombre de usuario" :rules="usernameRules" v-model="user.username"
+                            @change="checkUsername" clearable density="compact"></v-text-field>
                         <v-container class="d-flex justify-space-around">
                             <v-btn :disabled="!updateUserValid">Guardar cambios
                                 <v-dialog activator="parent" width="auto" v-model="editProfileDialog">
@@ -72,14 +73,14 @@
                 <v-container v-if="user && !edit_profile && change_password" class="d-flex flex-column w-75 ">
                     <v-alert class="mb-3 bg-secondary">NOTA: Al cambiar de contraseña deberá volver a iniciar
                         sesión</v-alert>
-                    <v-form fast-fail validate-on="input" v-model="changePasswordValid">
-                        <v-text-field label="Contraseña anterior" :rules='required' v-model="old_password" clearable
+                    <v-form fast-fail validate-on="input" v-model="changePasswordValid" ref="changePasswordForm">
+                        <v-text-field label="Contraseña anterior" :rules='oldPasswordRules' v-model="old_password" clearable
                             density="compact" type="password"></v-text-field>
                         <v-text-field label="Contraseña nueva" :rules="passwordRules" v-model="new_password" clearable
                             density="compact" type="password"></v-text-field>
 
-                        <v-text-field label="Repetir contraseña" :rules="repeatPasswordRules" v-model="repeat_password" clearable density="compact"
-                            type="password"></v-text-field>
+                        <v-text-field label="Repetir contraseña" :rules="repeatPasswordRules" v-model="repeat_password"
+                            clearable density="compact" type="password"></v-text-field>
                         <v-container class="d-flex justify-space-around">
                             <v-btn :disabled="!changePasswordValid">Guardar contraseña
                                 <v-dialog activator="parent" width="auto" v-model="changePasswordDialog">
@@ -102,11 +103,7 @@
                             <v-btn @click="change_password = !change_password">Cancelar</v-btn>
                         </v-container>
                     </v-form>
-
-
-
                 </v-container>
-
             </v-card>
         </v-col>
     </v-row>
@@ -129,6 +126,8 @@ export default {
             editProfileDialog: false,
             usernameTaken: false,
             changePasswordDialog: false,
+            incorrectPassword: false,
+            samePassword: false,
             required: [
                 value => {
                     if (value.length > 0) return true
@@ -142,6 +141,19 @@ export default {
                 value => {
                     if (value.length >= 3) return true
                     return 'Nombre de usuario demasiado corto'
+                },
+                () => {
+                    if (!this.usernameTaken) return true
+                    return 'Este nombre de usuario ya existe'
+                }
+            ],
+            oldPasswordRules: [
+                value => {
+                    return this.requiredField(value);
+                },
+                () => {
+                    if (this.incorrectPassword) return "Contraseña incorrecta"
+                    return true
                 }
             ],
 
@@ -173,6 +185,10 @@ export default {
                     }
 
                     return 'La contraseña debe contener al menos un número, una letra y un simbolo';
+                },
+                value => {
+                    if (value !== this.old_password) return true
+                    return "La contraseña anterior y nueva son iguales"
                 }
             ],
             repeatPasswordRules: [
@@ -233,41 +249,50 @@ export default {
 
         },
         changePassword() {
-            this.$axios.patch(`${this.url}/user/change_password`, {
-                'old_password': this.old_password,
-                'new_password': this.new_password,
-                'repeat_password': this.repeat_password,
-            },
-                {
-                    headers: {
-                        'X-CSRFToken': this.$cookies.get('csrftoken')
+            this.$refs.changePasswordForm.validate()
+            if (this.changePasswordValid) {
+                this.$axios.patch(`${this.url}/user/change_password`, {
+                    'old_password': this.old_password,
+                    'new_password': this.new_password,
+                    'repeat_password': this.repeat_password,
+                },
+                    {
+                        headers: {
+                            'X-CSRFToken': this.$cookies.get('csrftoken')
+                        }
                     }
-                }
-            )
-                .then(res => {
-                    console.log(res)
-                    if (res.status == 200) this.$router.push('/login');
-                })
-                .catch(err => {
-                    console.error(err);
-                    // if (err.response.status == 403) this.$router.push('/login')
-                });
+                )
+                    .then(res => {
+                        console.log(res)
+                        if (res.status == 200) this.$router.push('/login');
+                        this.change_password = !this.change_password
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        if (err.data.samePassword == true) this.samePassword = true;
+                        else this.incorrectPassword = true;
+
+                        this.$refs.changePasswordForm.validate();
+                        this.changePasswordDialog = false;
+                        // if (err.response.status == 403) this.$router.push('/login')
+                    });
+            }
 
 
-            this.change_password = !this.change_password
         },
         async checkUsername() {
-            const response = await this.$axios.get(
-                `http://${this.apiUrl}/user/is-username-taken`, {
+            this.$axios.get(
+                `${this.url}/user/is-username-taken`, {
                 params: {
                     username: this.user.username,
                 },
             }
-            );
-
-
-
-
+            ).then(res => {
+                console.log(res);
+                if (res.data.taken) return this.usernameTaken = true
+            }).catch(err => {
+                console.log(err);
+            });
         },
 
         requiredField(value) {
