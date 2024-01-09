@@ -30,10 +30,9 @@ class BankViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['bank_name']
 
-    def getBanks(self,request, pages=1):
+    def getBanks(self,request):
         banks = bank.objects.prefetch_related('branches').all()
-        paginator = Paginator(banks, 10)
-        serializer = BankSerializer(paginator.page(pages).object_list,many=True)
+        serializer = BankSerializer(banks,many=True)
         return Response(serializer.data)
 
     def getBankById(self, request, PK=None):
@@ -42,7 +41,7 @@ class BankViewSet(viewsets.ModelViewSet):
         print('hola')
         return Response(serializer.data)
     
-    def getBankByName(self,request,bank_name):
+    def getBankByName(self,request, bank_name, pages=1):
         if bank_name:
             results = []
             support = []
@@ -57,10 +56,12 @@ class BankViewSet(viewsets.ModelViewSet):
 
             for i in results:
                 support.append(i['bank_name'].lower())
-
+            
             results = list(set(support))
 
-            return Response({'result':results})
+            paginator = Paginator(results, 20)
+            
+            return Response({'result': paginator.page(pages).object_list})
         else:
             return Response({'error':'No search query provided'})
     

@@ -9,9 +9,9 @@ urlpatterns = [
     path('', include("django.contrib.auth.urls")),
 
         # path('api/', include('router.urls'))
-    path('banks/<int:pages>', BankViewSet.as_view({'get': 'getBanks'}), name='bank-list'),
+    path('banks/', BankViewSet.as_view({'get': 'getBanks'}), name='bank-list'),
     path('banks/find/<int:PK>', BankViewSet.as_view({'get': 'getBankById'}), name='bank-detail'),
-    path('banks/filter/<bank_name>',BankViewSet.as_view({'get': 'getBankByName'})),
+    path('banks/filter/<bank_name>/<int:pages>',BankViewSet.as_view({'get': 'getBankByName'})),
     path('banks/create', BankViewSet.as_view({'post': 'createBank'}), name='bank-creation'),
     path('banks/delete/<int:PK>', BankViewSet.as_view({'delete': 'deleteBank'}), name='bank-elimination'),
     path('banks/update/<int:PK>', BankViewSet.as_view({'patch': 'updateBank'}), name='bank-update'),
