@@ -45,13 +45,20 @@ class BankViewSet(viewsets.ModelViewSet):
     def getBankByName(self,request,bank_name):
         if bank_name:
             results = []
-            filter = [bank.objects.filter(bank_name__istartswith=bank_name), 
-                        bank.objects.filter(bank_name__iendswith=bank_name), 
-                        bank.objects.filter(bank_name__icontains=bank_name), 
-                        bank.objects.filter(bank_name__iexact=bank_name)]
-            for r in filter:
-                results.append(r.values('bank_name').)   # Execute the query
+            support = []
+            filter = [bank.objects.filter(bank_name__istartswith=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__iendswith=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__icontains=bank_name).values('bank_name'), 
+                        bank.objects.filter(bank_name__iexact=bank_name).values('bank_name')]
+            
+            for i in filter:
+                for j in i:
+                    results.append(j)
 
+            for i in results:
+                support.append(i['bank_name'].lower())
+
+            results = list(set(support))
 
             return Response({'result':results})
         else:
