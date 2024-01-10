@@ -7,11 +7,11 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import AllowAny,IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from datetime import *
 from django.contrib.sessions.models import Session
 
-
+from django.db.models import Count, Q
 from .models import *
 from .serializers import *
 from django.http import JsonResponse
@@ -39,33 +39,56 @@ class BankViewSet(viewsets.ModelViewSet):
 
     def getBankById(self, request, PK=None):
         bank_obj = bank.objects.get(pk=PK)
-        serializer = BankSerializer(bank_obj)   
+        serializer = BankSerializer(bank_obj)
         print('hola')
         return Response(serializer.data)
     
-    def getBankByName(self,request, bank_name, pages=1):
+    def getBankByName(self,request):
+        params = request.query_params
+        bank_name = params.get('bank_name')
         if bank_name:
-            results = []
-            support = []
-            filter = [bank.objects.filter(bank_name__istartswith=bank_name).values('bank_name'), 
-                        bank.objects.filter(bank_name__iendswith=bank_name).values('bank_name'), 
-                        bank.objects.filter(bank_name__icontains=bank_name).values('bank_name'), 
-                        bank.objects.filter(bank_name__iexact=bank_name).values('bank_name')]
-            
-            for i in filter:
-                for j in i:
-                    results.append(j)
+            filter = bank.objects.filter(bank_name__icontains=bank_name)
+            filter = filter.annotate(branches_count=Count('branches'))
+        #     filter = bank.objects.filter(bank_name__istartswith=bank_name)
+        #     filter = bank.objects.filter(bank_name__iendswith=bank_name)
+        #     filter = bank.objects.filter(bank_name__icontains=bank_name)
+        #     filter = bank.objects.filter(bank_name__iexact=bank_name)
+        #     print(request.query_params.get('city'))
+            min_sucursales = params.get('min_sucursales')
+            max_sucursales = params.get('max_sucursales')
 
-            for i in results:
-                support.append(i['bank_name'].lower())
-            
-            results = list(set(support))
+            if min_sucursales is not None:
+                filter = filter.filter(branches_count__gte=min_sucursales)
+            if max_sucursales is not None:
+                filter = filter.filter(branches_count__lte=max_sucursales)
 
-            paginator = Paginator(results, 20)
-            
-            return Response({'result': paginator.page(pages).object_list})
+            page=params.get('page')
+            opening_hour=params.get('opening_hour')
+            closing_hour=params.get('closing_hour')
+
+            if opening_hour:
+                  # Use Q objects to combine conditions with OR logic
+                  filter = filter.filter(branches__opening_hour__lte=opening_hour) 
+                  
+            if closing_hour:
+                  # Use Q objects to combine conditions with OR logic
+                  filter = filter.filter(branches__closing_hour__gte=closing_hour) 
+
+            currencies = params.get('currencies')
+
+            items_per_page=2
+
+            serializer = BankSerializer(filter, many=True)
+            results = filter.values('bank_name', 'branches_count')
+
+              # for banks in serializer:
+                  # if branches_count >= min_sucursales and branches_count <= max_sucursales:
+
+        #     print(str(filter.query))
+        #     print(results)
+            return Response({'result':serializer.data, 'branches_count_result':results})
         else:
-            return Response({'error':'No search query provided'})
+          return Response({'error':'No search query provided'})
     
     def createBank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
@@ -377,7 +400,7 @@ class UserViewSet(viewsets.ModelViewSet):
         username = request.GET.get('username')
         print(username)
         if ((request.user.is_authenticated and username != currentUser) or (not request.user.is_authenticated)):
-            if User.objects.filter(username=request.GET.get('username')).exists():
+            if User.objects.filter(username=username).exists():
                 return Response({'taken':True})
 
         return Response({'taken':False})

@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <v-container fluid>
-      <default-bar />
-      <View />
+    <!-- <v-container fluid> -->
+    <default-bar />
+    <View />
 
-    </v-container>
-    <default-footer />
+    <!-- </v-container> -->
+    <default-footer class="d-block" />
   </v-app>
 </template>
 

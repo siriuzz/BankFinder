@@ -10,14 +10,21 @@ class BranchSerializer(serializers.HyperlinkedModelSerializer):
         
 class BankSerializer(serializers.HyperlinkedModelSerializer):    
     branches = serializers.SerializerMethodField()
+    currency_exchanges = serializers.SerializerMethodField()
+
     class Meta:
         model=bank
-        fields=['bank_id','bank_name','website','contact_number','logo','branches']
+        fields=['bank_id','bank_name','website','contact_number','logo','branches','currency_exchanges']
         
     def get_branches(self, obj):
         branches = branch.objects.filter(bank_id=obj)
         branch_serializer = BranchSerializer(branches, many=True, context={'request': self.context.get('request')})
         return branch_serializer.data
+    
+    def get_currency_exchanges(self,obj):
+        currency_exchanges = bank_currency_exchange.objects.filter(bank_id=obj)
+        currency_exchanges_serializer = BankCurrencyExchangeSerializer(currency_exchanges, many=True, context={'request': self.context.get('request')})
+        return currency_exchanges_serializer.data
         
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
