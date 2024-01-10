@@ -29,8 +29,6 @@ class BankViewSet(viewsets.ModelViewSet):
     queryset = bank.objects.all().order_by('-bank_id')
     serializer_class = BankSerializer
     permission_classes = [permissions.AllowAny]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['bank_name']
 
     def getBanks(self,request):
         banks = bank.objects.prefetch_related('branches').all()
@@ -43,10 +41,10 @@ class BankViewSet(viewsets.ModelViewSet):
         print('hola')
         return Response(serializer.data)
     
-    def getBankByName(self,request):
+    def get_banks_filter(self,request):
         params = request.query_params
         bank_name = params.get('bank_name')
-        if bank_name:
+        if bank_name is not "" or bank_name is not None:
             filter = bank.objects.filter(bank_name__icontains=bank_name)
             filter = filter.annotate(branches_count=Count('branches'))
         #     filter = bank.objects.filter(bank_name__istartswith=bank_name)
@@ -88,7 +86,9 @@ class BankViewSet(viewsets.ModelViewSet):
         #     print(results)
             return Response({'result':serializer.data, 'branches_count_result':results})
         else:
-          return Response({'error':'No search query provided'})
+            banks = bank.objects.prefetch_related('branches').all()
+            serializer = BankSerializer(banks,many=True)
+            return Response(serializer.data)
     
     def createBank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))

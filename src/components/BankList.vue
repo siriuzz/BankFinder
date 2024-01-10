@@ -49,7 +49,8 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-pagination model-value="2" v-model="filterParams.page" length="4"></v-pagination></v-sheet>eet>
+    <v-pagination model-value="2" v-model="filterParams.page" length="4"></v-pagination>
+    </v-sheet>
 </template>
 
 <script>
@@ -82,13 +83,13 @@ export default {
   methods: {
     async fetchBanks() {
       try {
-        if (this.search) {
+        if (this.search || this.filterParams) {
           this.filterParams.currencies = this.foreignCurrenciesValue.join(',')
           this.filterParams.min_sucursales = this.rango_sucursales[0];
           this.filterParams.max_sucursales = this.rango_sucursales[1];
           this.filterParams.bank_name = this.search
 
-          const filtertedEntries = Object.entries(this.filterParams).filter(value => value !== "" && value !== 0);
+          const filtertedEntries = Object.entries(this.filterParams).filter(([key,value]) => value !== "");
           const response = await this.$axios.get(`http://${this.apiUrl}/banks/filter/`, {
             params:
               this.filterParams
@@ -98,6 +99,7 @@ export default {
             this.$router.push({ path: "/", query: Object.fromEntries(filtertedEntries) })
             // this.banks = response.data;
             this.banks = res.data.result;
+            console.log(res)
           }).catch(err => {
             console.log(err);
           });
@@ -107,6 +109,7 @@ export default {
           const response = await this.$axios.get(`http://${this.apiUrl}/banks`);
           this.banks = response.data
           console.log(response);
+          
         }
       } catch (error) {
         console.error('Error fetching banks:', error);
