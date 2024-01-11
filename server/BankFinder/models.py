@@ -30,17 +30,29 @@ class currency(models.Model):
     currency_code = models.CharField(max_length=3,null=False)
     currency_name = models.CharField(max_length=150,null=False)
     def __str__(self):
-        return self.currency_code
+        return f"{self.currency_code}"
     pass
     
 class bank_currency_exchange(models.Model):
-    bank_id=models.ForeignKey(bank, on_delete=models.CASCADE, db_column='bank_id')
-    currency_id = models.ForeignKey(currency,primary_key=True, on_delete=models.CASCADE, db_column='currency_id')
+    # bank_currency_exchange_id=models.AutoField(primary_key=True, unique=True)
+    id=models.BigAutoField(primary_key=True, unique=True)
+    bank_id=models.ForeignKey(bank,on_delete=models.CASCADE,default=1, db_column='bank_id')
+    currency_id = models.ForeignKey(currency,default=1,on_delete=models.CASCADE, db_column='currency_id')
     buying_at = models.FloatField(null=False, default=1)
     selling_at = models.FloatField(null=False, default=1)
     last_update = models.DateTimeField(null=True, default=datetime.now())
+    
     def __str__(self):
-        return str(self.bank_id)+ " " + str(self.currency_id) + " " + str(self.buying_at) + " " + str(self.selling_at)
+        return f"{self.currency_id} {self.bank_id} {self.buying_at} {self.selling_at}"
+    pass
+    
+    class Meta:
+        unique_together=(('bank_id','currency_id'),)
+        # models.UniqueConstraint(fields=['bank_id','currency_id'], name="unique_bank_currency")
+    
+    #     constraints = [
+    #         models.UniqueConstraint(fields=['bank_id', 'currency_id'], name='unique_bank_currency')
+    #     ]
     
 # class target_currency(models.Model):
 #     target_currency_id = models.AutoField(primary_key=True,unique=True)
