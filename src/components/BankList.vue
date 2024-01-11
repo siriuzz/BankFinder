@@ -33,8 +33,10 @@
           <v-col v-for="bank in banks" :key="bank.bank_id" cols="50" md="3" @click="bankRedirect(bank.bank_id)">
             <v-item-group>
               <v-card class='d-flex flex-column pa-5' elevation="5" height="200" link>
+                
                 <v-sheet height="40%">
                   <v-img cover :src="'http://localhost:8000' + bank.logo" />
+                  
                 </v-sheet>
                 <v-card-title>
                   {{ bank.bank_name }}
@@ -73,12 +75,13 @@ export default {
         currencies: []
 
       },
-      foreignCurrencies: ['USD', 'EUR'],
+      foreignCurrencies: [],
 
     };
   },
   mounted() {
     this.fetchBanks();
+    this.fetchCurrencies()
   },
   methods: {
     async fetchBanks() {
@@ -117,6 +120,12 @@ export default {
     },
     bankRedirect(id) {
       return this.$router.push(`/bank?id=${id}`)
+    },
+    fetchCurrencies(){
+      this.$axios.get(`http://${this.apiUrl}/currency`).then(res=>{
+        this.foreignCurrencies = res.data.map(currency=>currency.currency_code)
+        // console.log(this.foreignCurrencies)
+      })
     }
   },
 };

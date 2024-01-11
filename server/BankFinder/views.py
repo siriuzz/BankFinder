@@ -44,7 +44,7 @@ class BankViewSet(viewsets.ModelViewSet):
     def get_banks_filter(self,request):
         params = request.query_params
         bank_name = params.get('bank_name')
-        if bank_name is not "" or bank_name is not None:
+        if bank_name != "" or bank_name is not None:
             filter = bank.objects.filter(bank_name__icontains=bank_name)
             filter = filter.annotate(branches_count=Count('branches'))
         #     filter = bank.objects.filter(bank_name__istartswith=bank_name)
@@ -72,11 +72,24 @@ class BankViewSet(viewsets.ModelViewSet):
                   # Use Q objects to combine conditions with OR logic
                   filter = filter.filter(branches__closing_hour__gte=closing_hour) 
 
-            currencies = params.get('currencies')
-
+            currencies = params.get('currencies').split(',')
+            print(currencies)
+            if currencies != ['']:
+                for i in range(len(currencies)): 
+                    filter = filter.filter(bank_currency_exchange__currency_id__currency_code=currencies[i])
+                
             items_per_page=2
+            paginator = Paginator(filter, items_per_page)
+            
+            try:
+                result_page = paginator.page(page)
+            except PageNotAnInteger:
+                result_page=paginator.page(1)
+            except EmptyPage:
+                result_page = paginator.page(paginator.num_pages)
+                ##gc211 fd411
 
-            serializer = BankSerializer(filter, many=True)
+            serializer = BankSerializer(result_page, many=True)
             results = filter.values('bank_name', 'branches_count')
 
               # for banks in serializer:

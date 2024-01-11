@@ -49,9 +49,16 @@ class BankCurrencyExchangeSerializer(serializers.HyperlinkedModelSerializer):
     currency_id = serializers.HyperlinkedRelatedField(view_name='currency-detail', lookup_url_kwarg='PK', lookup_field='currency_id', read_only=True) 
     buying_at = serializers.CharField(read_only=False)
     selling_at = serializers.CharField(read_only=False)
+    currency = serializers.SerializerMethodField()
+    
     class Meta:
         model=bank_currency_exchange
-        fields=['bank_id', 'currency_id', 'buying_at', 'selling_at', 'last_update']
+        fields=['bank_id', 'currency_id', 'buying_at', 'selling_at', 'last_update','currency']
+        
+    def get_currency(self,obj):
+        currency_instance = obj.currency_id  # Assuming currency_id is the actual currency instance
+        currency_serializer = CurrencySerializer(currency_instance, context={'request': self.context.get('request')})
+        return currency_serializer.data
         
         
 class UserSerializer(serializers.HyperlinkedModelSerializer):
