@@ -17,6 +17,7 @@
               </v-list-item>
             </v-list>
           </v-sheet>
+          <calculator/>
 
         </v-card>
       </v-row>
@@ -26,7 +27,11 @@
 </template>
   
 <script>
+import Calculator from "../components/Calculator.vue";
 export default {
+  components:{
+    Calculator
+  },
   data() {
     return {
       requestBankId: this.$route.query.id,
