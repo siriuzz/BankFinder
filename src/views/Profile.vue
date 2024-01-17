@@ -5,7 +5,7 @@
             <v-col md="6" cols="12">
                 <v-card elevation="5" variant="outlined" class="ma-5 pa-5 text-center">
                     <v-card-title class="text-h4">Perfil</v-card-title>
-                    <v-container v-if="user && !edit_profile && !change_password" class="d-flex flex-column w-90 ">
+                    <v-container v-if="user && !editProfile && !changePassword" class="d-flex flex-column w-90 ">
                         <v-chip-group column>
                             <v-chip class="" prepend-icon="mdi-email">
                                 Nombre: {{ user.first_name }}
@@ -17,15 +17,15 @@
                                 Último inicio de sesión: {{ parseDate }}
                             </v-chip>
                             <v-container class="d-flex justify-space-around">
-                                <v-btn @click="edit_profile = !edit_profile">Editar perfil</v-btn>
-                                <v-btn @click="change_password = !change_password">Cambiar contraseña</v-btn>
+                                <v-btn @click="editProfile = !editProfile">Editar perfil</v-btn>
+                                <v-btn @click="changePassword = !changePassword">Cambiar contraseña</v-btn>
                             </v-container>
                         </v-chip-group>
     
     
                     </v-container>
-                    <update-user-form :user="user" :updateUserValid="updateUserValid" :edit_profile="edit_profile"/>
-                    <!-- <v-container v-if="user && edit_profile && !change_password" class="d-flex flex-column w-75 ">
+                    <update-user-form :check-username="checkUsername" @cancel='cancelUpdate' :user="user" :updateUserValid="updateUserValid" :active="editProfile"/>
+                    <!-- <v-container v-if="user && editProfile && !change_password" class="d-flex flex-column w-75 ">
                         
                         <v-form @submit.prevent ref="updateUserForm" v-model="updateUserValid"
                             validate-on="input">
@@ -51,44 +51,11 @@
                                         </v-card>
                                     </v-dialog>
                                 </v-btn>
-                                <v-btn @click="edit_profile = !edit_profile">Cancelar</v-btn>
+                                <v-btn @click="editProfile = !editProfile">Cancelar</v-btn>
                             </v-container>
                         </v-form>
                     </v-container> -->
-                    <v-container v-if="user && !edit_profile && change_password" class="d-flex flex-column w-75 ">
-                        <v-alert class="mb-3 bg-secondary">NOTA: Al cambiar de contraseña deberá volver a iniciar
-                            sesión</v-alert>
-                        <v-form fast-fail validate-on="input" v-model="changePasswordValid" ref="changePasswordForm">
-                            <v-text-field label="Contraseña anterior" :rules='oldPasswordRules' v-model="old_password" clearable
-                                density="compact" type="password"></v-text-field>
-                            <v-text-field label="Contraseña nueva" :rules="passwordRules" v-model="new_password" clearable
-                                density="compact" type="password"></v-text-field>
-    
-                            <v-text-field label="Repetir contraseña" :rules="repeatPasswordRules" v-model="repeat_password"
-                                clearable density="compact" type="password"></v-text-field>
-                            <v-container class="d-flex justify-space-around">
-                                <v-btn :disabled="!changePasswordValid">Guardar contraseña
-                                    <v-dialog activator="parent" width="auto" v-model="changePasswordDialog">
-                                        <v-card>
-                                            <v-card-text>¿Estas seguro de que quieres cambiar tu contraseña?</v-card-text>
-                                            <v-card-text>
-                                                Al cambiar la contraseña, deberás iniciar sesión de nuevo
-                                            </v-card-text>
-                                            <v-card-actions>
-                                                <v-container class="w-auto d-flex flex-row justify-space-around">
-                                                    <v-btn block @click="changePassword" width="100" variant='outlined'>Cambiar
-                                                        contraseña</v-btn>
-                                                    <v-btn block @click="changePasswordDialog = false"
-                                                        variant='outlined'>Cancelar</v-btn>
-                                                </v-container>
-                                            </v-card-actions>
-                                        </v-card>
-                                    </v-dialog>
-                                </v-btn>
-                                <v-btn @click="change_password = !change_password">Cancelar</v-btn>
-                            </v-container>
-                        </v-form>
-                    </v-container>
+                    <change-password-form @cancel="cancelUpdatePassword" :active="changePassword" :user="user" :valid="changePasswordValid"/>
                 </v-card>
             </v-col>
         </v-row>
@@ -97,9 +64,11 @@
     
 <script>
 import UpdateUserForm from '@/components/UpdateUser/UpdateUserForm.vue';
+import ChangePasswordForm from '@/components/ChangePassword/ChangePasswordForm.vue'
 export default {
     components:{
-        UpdateUserForm
+        UpdateUserForm,
+        ChangePasswordForm
     },
     data() {
         return {
@@ -107,8 +76,8 @@ export default {
             user: {},
             updateUserValid: true,
             changePasswordValid: true,
-            edit_profile: false,
-            change_password: false,
+            editProfile: false,
+            changePassword: false,
             old_password: "",
             new_password: "",
             repeat_password: "",
@@ -117,81 +86,6 @@ export default {
             changePasswordDialog: false,
             incorrectPassword: false,
             samePassword: false,
-            required: [
-                value => {
-                    if (value.length > 0) return true
-                    return 'Este campo es obligatorio'
-                }
-            ],
-            usernameRules: [
-                value => {
-                    return this.requiredField(value);
-                },
-                value => {
-                    if (value.length >= 3) return true
-                    return 'Nombre de usuario demasiado corto'
-                },
-                () => {
-                    if (!this.usernameTaken) return true
-                    return 'Este nombre de usuario ya existe'
-                }
-            ],
-            oldPasswordRules: [
-                value => {
-                    return this.requiredField(value);
-                },
-                () => {
-                    if (this.incorrectPassword) return "Contraseña incorrecta"
-                    return true
-                }
-            ],
-
-            passwordRules: [
-                value => {
-                    return this.requiredField(value)
-                },
-                value => {
-                    if (value.length >= 8) return true
-                    return 'La contraseña debe contener al menos 8 caracteres'
-                },
-                value => {
-                    let hasNumber = false;
-                    let hasLetter = false;
-                    let hasSpecialChar = false;
-
-                    for (const char of value) {
-                        if (!isNaN(char)) {
-                            hasNumber = true;
-                        } else if (char.match(/[a-zA-Z]/)) {
-                            hasLetter = true;
-                        } else if (char.match(/[!@#$%^&*(),.?":{}|<>]/)) {
-                            hasSpecialChar = true;
-                        }
-
-                        if (hasNumber && hasLetter && hasSpecialChar) {
-                            return true;
-                        }
-                    }
-
-                    return 'La contraseña debe contener al menos un número, una letra y un simbolo';
-                },
-                value => {
-                    if (value !== this.old_password) return true
-                    return "La contraseña anterior y nueva son iguales"
-                }
-            ],
-            repeatPasswordRules: [
-                value => {
-                    if (value.length > 0) return true
-                    return 'Este campo es obligatorio.'
-                },
-                value => {
-                    if (value === this.new_password) return true
-                    return 'Las contraseñas no coinciden'
-                }
-            ]
-
-
 
         }
     },
@@ -200,6 +94,12 @@ export default {
             this.$refs.updateUserForm.validate();
             console.log(updateUserValid)
         },
+        cancelUpdate(cancel){
+            this.editProfile = cancel
+        },
+        cancelUpdatePassword(cancel){
+            this.changePassword = cancel
+        },  
         getUserData() {
             this.$axios.get(`${this.url}/user-data`)
                 .then(res => {
@@ -232,12 +132,12 @@ export default {
                         console.error(err);
                         // if (err.response.status == 403) this.$router.push('/login')
                     });
-                this.edit_profile = !this.edit_profile
+                this.editProfile = !this.editProfile
             }
 
 
         },
-        changePassword() {
+        updatePassword() {
             this.$refs.changePasswordForm.validate()
             if (this.changePasswordValid) {
                 this.$axios.patch(`${this.url}/user/change_password`, {
@@ -254,7 +154,7 @@ export default {
                     .then(res => {
                         console.log(res)
                         if (res.status == 200) this.$router.push('/login');
-                        this.change_password = !this.change_password
+                        this.changePassword = !this.changePassword
                     })
                     .catch(err => {
                         console.error(err);
