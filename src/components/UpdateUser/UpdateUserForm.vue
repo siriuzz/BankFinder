@@ -6,8 +6,8 @@
             <v-text-field label="Nombre de usuario" :rules="usernameRules" v-model="user.username" @change="checkUsername"
                 clearable density="compact" required></v-text-field>
             <v-container class="d-flex justify-space-around">
-                <v-btn :disabled="!updateUserValid">Guardar cambios
-                    <UpdateUserDialog />
+                <v-btn :disabled="!updateUserValid" >Guardar cambios
+                    <FormConfirmationDialog v-model="showDialog" :save="updateProfile" :active="showDialog" @cancel="hideDialog" text="¿Estas seguro de que quieres guardar los cambios?"/>
                 </v-btn>
                 <v-btn @click="active = !active">Cancelar</v-btn>
             </v-container>
@@ -17,6 +17,7 @@
 
 <script>
 import UpdateUserDialog from "@/components/UpdateUser/UpdateUserDialog.vue";
+import FormConfirmationDialog from "../FormConfirmationDialog.vue";
 export default {
     props: {
         user: Object,
@@ -27,10 +28,12 @@ export default {
     },
     components: {
         UpdateUserDialog,
+        FormConfirmationDialog
     },
     data() {
         return {
-
+            url:import.meta.env.VITE_API_URL,
+            showDialog:false,
             required: [
                 value => {
                     if (value.length > 0) return true
@@ -53,16 +56,18 @@ export default {
         }
     },
     methods: {
+        hideDialog(cancel){
+            this.showDialog = cancel
+        },
         emitCancel() {
             this.$emit('cancel', this.active)
         },
         updateProfile() {
             if (this.updateUserValid) {
                 this.editProfileDialog = false;
-                this.$axios.patch(`${this.url}/user/update`, {
+                this.$axios.patch(`http://${this.url}/user/update`, {
                     'username': this.user.username,
                     'first_name': this.user.first_name,
-                    'last_name': this.user.last_name
                 }, {
 
                     headers: {
@@ -77,7 +82,9 @@ export default {
                         console.error(err);
                         // if (err.response.status == 403) this.$router.push('/login')
                     });
-                this.active = !this.active
+                    this.emitCancel();
+                    this.showDialog = false;
+                // this.active = !this.active
             }
 
 
