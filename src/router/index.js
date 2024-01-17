@@ -58,6 +58,12 @@ const routes = [
 
     ],
 
+  },
+  {
+    path:'/recuperar-contrasena',
+    name:'recuperar-contrasena',
+    component:()=>import('@/views/RecoverPassword.vue')
+
   }
 ]
 

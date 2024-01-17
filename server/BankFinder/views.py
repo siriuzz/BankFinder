@@ -10,11 +10,17 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from datetime import *
 from django.contrib.sessions.models import Session
+from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
+import string
+import secrets
 
 from django.db.models import Count, Q
 from .models import *
 from .serializers import *
 from django.http import JsonResponse
+import os
+
 
 
 def get_csrf_token(request):
@@ -78,12 +84,13 @@ class BankViewSet(viewsets.ModelViewSet):
                 for i in range(len(currencies)): 
                     filter = filter.filter(bank_currency_exchange__currency_id__currency_code=currencies[i])
                 
-            items_per_page=2
+            items_per_page=params.get('items_per_page')
             paginator = Paginator(filter, items_per_page)
             
             try:
                 result_page = paginator.page(page)
             except PageNotAnInteger:
+                print('NAN')
                 result_page=paginator.page(1)
             except EmptyPage:
                 result_page = paginator.page(paginator.num_pages)
@@ -97,7 +104,7 @@ class BankViewSet(viewsets.ModelViewSet):
 
         #     print(str(filter.query))
         #     print(results)
-            return Response({'result':serializer.data, 'branches_count_result':results})
+            return Response({'result':serializer.data, 'branches_count_result':results, 'total_pages': paginator.num_pages})
         else:
             banks = bank.objects.prefetch_related('branches').all()
             serializer = BankSerializer(banks,many=True)
@@ -302,7 +309,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action == 'login' or self.action == 'register' or self.action =='check_auth' or self.action == 'isUsernameTaken':
+        if self.action == 'login' or self.action == 'register' or self.action =='check_auth' or self.action == 'isUsernameTaken' or self.action=='reset_password':
            # Solo para esta vista, permitimos el acceso a cualquier usuario
            return [AllowAny()]
         return super().get_permissions()
@@ -321,9 +328,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def register(self, request):
         try:
-            user = User.objects.create_user(username = request.data.get('username'), password = request.data.get('password'))
+            user = User.objects.create_user(username = request.data.get('username'), password = request.data.get('password'), email=request.data.get('email'))
             user.first_name = request.data.get('first_name')
-            user.last_name = request.data.get('last_name')
             user.save()
             login(request,user)
             return Response({'status': 'success'}, status=200)
@@ -409,14 +415,48 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'message':'El usuario no esta autenticado'})
 
     def isUsernameTaken(self,request):
-        currentUser = User.objects.get(username=request.user.username)
         username = request.GET.get('username')
-        print(username)
-        if ((request.user.is_authenticated and username != currentUser) or (not request.user.is_authenticated)):
+        print(request.user.is_authenticated)
+        if request.user.is_authenticated:
+            currentUser = User.objects.get(username=request.user.username)
+            if User.objects.filter(username=username).exists():
+                    return Response({'taken':True})
+        else:
             if User.objects.filter(username=username).exists():
                 return Response({'taken':True})
+            
 
         return Response({'taken':False})
+    
+    def reset_password(self,request):
+        recipient_email = request.data.get('email')
+        print(recipient_email)
+        
+        try:
+           user = User.objects.get(email=recipient_email)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'El correo electrónico no está registrado'}, status=400)
+        length=10
+        characters = string.ascii_letters + string.digits + string.punctuation
+        random_string = ''.join(secrets.choice(characters) for _ in range(length))
+        try:
+            user.set_password(random_string)
+            user.save()
+        except Exception as e:
+            return JsonResponse({'error': 'El correo electrónico no está registrado'}, status=400)
+            
+        
+        subject="Recuperación de contraseña"
+        message = (
+        f'<h1>Hola, {user.first_name}!</h1>'
+        f'<p>Has solicitado restablecer tu contraseña. Utiliza la siguiente contraseña temporal para iniciar sesión:</p>'
+        f'<p>Nombre de usuario: {user.username}</p>'
+        f'<p>Nueva contraseña: {random_string}</p>'
+        )
+        from_email=os.getenv('EMAIL_HOST_USER')
+        recipient_list = [recipient_email]
+        send_mail(subject,message,from_email,recipient_list, html_message=message)
+        return Response({'done'})
 
 
 

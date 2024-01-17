@@ -58,7 +58,8 @@ urlpatterns = [
     path('user-data/',UserViewSet.as_view({'get':'getUserBySessionId'})),
     path('user/update',UserViewSet.as_view({'patch':'updateUser'}),name="update_user"),
     path('user/change_password',UserViewSet.as_view({'patch':'changePassword'}),name='change_password'),
-    path('user/is-username-taken',UserViewSet.as_view({'get':'isUsernameTaken'}),name='isUsernameTaken')
+    path('user/is-username-taken',UserViewSet.as_view({'get':'isUsernameTaken'}),name='isUsernameTaken'),
+    path('user/recover-password',UserViewSet.as_view({'post':'reset_password'}),name='reset_password')
 ]
 
 urlpatterns += router.urls

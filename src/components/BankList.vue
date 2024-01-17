@@ -1,61 +1,72 @@
 <template>
   <v-sheet class="pb-10">
     <!-- <v-sheet disabled v-on:change="fetchBanks()"> {{ search }} </v-sheet> -->
-    <v-row class=" " height="200">
-      <v-col cols="12" md="2">
-        <v-card class="">
-          <v-container>
-            <v-form @submit.prevent>
-              <v-btn class="mb-2 bg-light-blue-5" @click="fetchBanks">Aplicar filtros</v-btn>
-              <v-card-text>Cantidad de sucursales</v-card-text>
-              
-              <v-range-slider v-model="rango_sucursales" density="compact" strict step="1" min="0" max="10"  thumb-label></v-range-slider>
+    <v-responsive>
 
-              <v-card-text>Hora de apertura</v-card-text>
-              <v-text-field v-model="filterParams.opening_hour" variant="solo" density="compact" type="time"
-                clearable></v-text-field>
+      <v-row class="pa-2" height="200">
+        <v-col cols="12" md="2">
+          <v-card class="">
+            <v-container>
+              <v-form @submit.prevent>
+                <v-btn class="mb-2 bg-light-blue-5" @click="fetchBanks">Aplicar filtros</v-btn>
+                <v-btn class="mb-2 bg-light-blue-5" @click="restartFilters">Reiniciar filtros</v-btn>
 
-              <v-card-text>Hora de cierre</v-card-text>
-              <v-text-field v-model="filterParams.closing_hour" variant="solo" density="compact"
-                type="time"></v-text-field>
-
-              <v-card-text>Divisas extranjeras</v-card-text>
-              <v-select :items="foreignCurrencies" item-title="name" item-value="value" clearable chips
-                density="compact" v-model="foreignCurrenciesValue" label="Divisas" multiple persistent-hint></v-select>
-
-
-            </v-form>
-          </v-container>
-        </v-card>
-      </v-col>
-      <v-col width="auto">
-        <v-row>
-          <v-col v-for="bank in banks" :key="bank.bank_id" cols="50" md="3" @click="bankRedirect(bank.bank_id)">
-            <v-item-group>
-              <v-card class='d-flex flex-column pa-5' elevation="5" height="200" link>
+                <v-card-text>Cantidad de sucursales</v-card-text>
                 
-                <v-sheet height="40%">
-                  <v-img cover :src="'http://localhost:8000' + bank.logo" />
+                <v-range-slider v-model="rango_sucursales" density="compact" strict step="1" min="0" max="10"  thumb-label></v-range-slider>
+  
+                <v-card-text>Hora de apertura</v-card-text>
+                <v-text-field v-model="filterParams.opening_hour" variant="solo" density="compact" type="time"
+                  clearable></v-text-field>
+  
+                <v-card-text>Hora de cierre</v-card-text>
+                <v-text-field v-model="filterParams.closing_hour" variant="solo" density="compact"
+                  type="time"></v-text-field>
+  
+                <v-card-text>Divisas extranjeras</v-card-text>
+                <v-select :items="foreignCurrencies" item-title="name" item-value="value" clearable chips
+                  density="compact" v-model="foreignCurrenciesValue" label="Divisas" multiple persistent-hint></v-select>
+  
+  
+              </v-form>
+              <v-card-text>Bancos por página</v-card-text>
+
+              <v-select :items="itemsPerPage" density="compact" v-model="filterParams.items_per_page" @select ="fetchBanks">
+              </v-select>
+            </v-container>
+          </v-card>
+        </v-col>
+        <v-col width="auto">
+          <v-row>
+            <v-col v-for="bank in banks" :key="bank.bank_id" cols="50" md="3" @click="bankRedirect(bank.bank_id)">
+              <v-item-group>
+                <v-card class='d-flex flex-column pa-5' elevation="5" height="220" link>
                   
-                </v-sheet>
-                <v-card-title>
-                  {{ bank.bank_name }}
-                </v-card-title>
-                Website: {{ bank.website }} <br>
-                Contacto: {{ bank.contact_number }}
-              </v-card>
-
-            </v-item-group>
-          </v-col>
-
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-pagination model-value="2" v-model="filterParams.page" length="4"></v-pagination>
+                  <v-sheet height="40%" class="d-flex align-center">
+                    <v-img fit :src="'http://localhost:8000' + bank.logo" />
+                    
+                  </v-sheet>
+                  <v-card-title>
+                    {{ bank.bank_name }}
+                  </v-card-title>
+                  Website: {{ bank.website }} <br>
+                  Contacto: {{ bank.contact_number }}
+                </v-card>
+  
+              </v-item-group>
+            </v-col>
+  
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-responsive>
+    <v-pagination model-value="1" v-model="filterParams.page" @click="fetchBanks" :length="numberOfPages"></v-pagination>
     </v-sheet>
 </template>
 
 <script>
+import router from '@/router';
+
 
 export default {
   props: ['search', 'loading'],
@@ -63,8 +74,10 @@ export default {
     return {
       apiUrl: import.meta.env.VITE_API_URL,
       banks: [],
+      itemsPerPage:[],
       rango_sucursales: [0,10],
       foreignCurrenciesValue:[],
+      numberOfPages:1,
       filterParams: {
         bank_name: "",
         page: 1,
@@ -72,7 +85,8 @@ export default {
         max_sucursales:0,
         opening_hour: '',
         closing_hour: '',
-        currencies: []
+        currencies: [],
+        items_per_page:3
 
       },
       foreignCurrencies: [],
@@ -84,6 +98,9 @@ export default {
     this.fetchCurrencies()
   },
   methods: {
+    restartFilters(){
+      window.location.reload();
+    },  
     async fetchBanks() {
       try {
         if (this.search || this.filterParams) {
@@ -102,6 +119,12 @@ export default {
             this.$router.push({ path: "/", query: Object.fromEntries(filtertedEntries) })
             // this.banks = response.data;
             this.banks = res.data.result;
+            this.itemsPerPage=[]
+            for(var i = 0; i < res.data.branches_count_result.length; i++){
+              this.itemsPerPage.push(i+1);
+            }
+            this.numberOfPages = res.data.total_pages;
+
             console.log(res)
           }).catch(err => {
             console.log(err);

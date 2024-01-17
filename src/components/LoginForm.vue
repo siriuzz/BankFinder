@@ -8,6 +8,7 @@
         <v-text-field v-model="password" label="Contraseña" type="password" :rules="passwordRules"
           required></v-text-field>
         <v-btn :loading="loading" type="submit" color="primary" block class="mt-2">Iniciar Sesión</v-btn>
+        <v-btn to="/recuperar-contrasena" variant="plain">Recuperar contraseña</v-btn>
       </v-form>
     </v-sheet>
   </div>
