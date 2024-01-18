@@ -1,21 +1,39 @@
 <template>
-  <v-container fluid>
-    <v-col style="justify-content: center;">
+  <v-container  >
+    <v-col justify-content='center'>
       <v-row>
-        <v-card elevation="5" width="100%" justify="center">
-          <v-sheet >
+        <v-card  elevation="5" width="100%" >
+          <v-sheet class="d-flex bg-secondary align-center">
+            <v-card  elevation="0" class="ma-3" outlined>
 
-            <v-img cover width="500" :src="'http://localhost:8000'+info.logo"></v-img>
+              <v-img wrap width="500"  :src="'http://localhost:8000' + info.logo"></v-img>
+            </v-card >
+            <v-card-title class="text-h4 ">{{ info.bank_name }}</v-card-title>
           </v-sheet>
-          <v-card-title>{{ info.bank_name }}</v-card-title>
-          <v-card-subtitle > {{ info.website }}</v-card-subtitle>
-          <v-card-subtitle > {{ info.contact_number }}</v-card-subtitle>
-          <v-sheet>
-            <v-list>
-              <v-list-item v-for="branch in info.branches">
-                <v-list-item-title>{{ branch.branch_name }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
+          <v-sheet class="justify-center d-flex">
+            <v-sheet rounded="8" class="bg-secondary text-center rounded-pill d-flex justify-center justify-space-around  pa-5 mt-5 text" width="90%">
+              <v-sheet class="bg-transparent">
+
+                <p class="text-subtitle font-weight-bold">Página web:</p>
+                <p> {{ info.website }}</p>
+              </v-sheet> 
+              <v-sheet class="bg-transparent">
+
+                <p class="text-subtitle font-weight-bold">Número principal:</p>
+                <p> {{ info.contact_number }}</p>
+              </v-sheet> 
+            </v-sheet>
+
+          </v-sheet>
+          <v-sheet class="d-flex flex-column justify-space-between pa-5 ">
+
+            <v-sheet>
+              <calculator :exchanges="info.currency_exchanges" @click="showDialog = !showDialog" :is-enabled="!auth" />
+              <login-dialog v-if="!auth" :open-dialog="showDialog" @update:open-dialog="protect" />
+            </v-sheet>
+          </v-sheet>
+          <v-sheet class="d-flex">
+            <branch-display v-if="showBranches" :branches="info.branches" />
           </v-sheet>
 
         </v-card>
@@ -26,22 +44,50 @@
 </template>
   
 <script>
+import Calculator from "../components/Calculator.vue";
+import BranchDisplay from "../components/BranchDisplay.vue";
+import LoginDialog from "../components/LoginDialog.vue"
+
 export default {
+  components: {
+    Calculator,
+    BranchDisplay,
+    LoginDialog
+  },
   data() {
     return {
       requestBankId: this.$route.query.id,
-      info: {}
+      info: {},
+      showBranches: false,
+      auth: false,
+      showDialog: false,
+    }
+  },
+  methods: {
+    protect() {
+      // console.log(this.showDialog)
+      if (!this.auth) this.showDialog = !this.showDialog
     }
   },
   mounted() {
     this.$axios.get(`http://${import.meta.env.VITE_API_URL}/banks/${this.requestBankId}`)
       .then(res => {
         this.info = res.data
-        console.log(res)
+        if (this.info.branches.length > 0) {
+          this.showBranches = true
+        }
+        // console.log(res)
       })
       .catch(err => {
         console.error(err);
-      })
-  }
+      });
+    this.$axios.get(`http://${import.meta.env.VITE_API_URL}/is-auth`).then(res => {
+      // console.log(res)
+      this.auth = res.data.auth
+      // console.log(this.auth)
+    })
+
+
+  },
 }
 </script>

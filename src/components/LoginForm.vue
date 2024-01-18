@@ -5,8 +5,10 @@
       <v-form ref="loginForm" @submit.prevent="login" validate-on=" input submit lazy" v-model="valid"
         :disabled="loading">
         <v-text-field v-model="username" label="Nombre de Usuario" :rules="usernameRules" required></v-text-field>
-        <v-text-field v-model="password" label="Contraseña" type="password" :rules="passwordRules"
-          required></v-text-field>
+        <v-text-field v-model="password" label="Contraseña" :rules="passwordRules"
+          :type="passwordVisible ? 'text' : 'password'" @click:append-inner="passwordVisible = !passwordVisible"
+          :append-inner-icon="passwordVisible ? 'mdi-eye' : 'mdi-eye-off'" required></v-text-field>
+        <v-btn to="/recuperar-contrasena" variant="text" size="small">Recuperar contraseña</v-btn>
         <v-btn :loading="loading" type="submit" color="primary" block class="mt-2">Iniciar Sesión</v-btn>
       </v-form>
     </v-sheet>
@@ -26,6 +28,7 @@ export default {
       apiUrl: import.meta.env.VITE_API_URL,
       csrfToken: '',
       incorrectCredentials: true,
+      passwordVisible: false,
       usernameRules: [
         value => {
           if (value) return true
