@@ -93,7 +93,7 @@ export default {
         opening_hour: '',
         closing_hour: '',
         currencies: [],
-        items_per_page: 3
+        items_per_page: 8
 
       },
       rango_sucursales: [0, 10],
@@ -116,7 +116,7 @@ export default {
         opening_hour: '',
         closing_hour: '',
         currencies: [],
-        items_per_page: 3
+        items_per_page: 8
       },
       window.localStorage.setItem('filters',JSON.stringify(this.filterParams))
       window.location.reload();

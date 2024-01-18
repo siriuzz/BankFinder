@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 
 class bank(models.Model):
     bank_id=models.AutoField(primary_key=True, unique=True)
@@ -40,7 +40,7 @@ class bank_currency_exchange(models.Model):
     currency_id = models.ForeignKey(currency,default=1,on_delete=models.CASCADE, db_column='currency_id')
     buying_at = models.FloatField(null=False, default=1)
     selling_at = models.FloatField(null=False, default=1)
-    last_update = models.DateTimeField(null=True, default=datetime.now())
+    last_update = models.DateTimeField(null=True, default=timezone.now)
     
     def __str__(self):
         return f"{self.currency_id} {self.bank_id} {self.buying_at} {self.selling_at}"

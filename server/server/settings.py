@@ -43,7 +43,7 @@ SECRET_KEY = 'django-insecure-vcu+vilgbrq4czw+3w$x2%leipq%qn%kkzr!up-(^_!j$-ys7)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'server',
     'BankFinder',
     'rest_framework',
@@ -109,6 +110,7 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT")
     }
 }
+# print(DATABASES)
 
 
 # Password validation
@@ -142,7 +144,6 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:8000",# Add the origin of your frontend
 ]
 CORS_ALLOW_CREDENTIALS = True
 

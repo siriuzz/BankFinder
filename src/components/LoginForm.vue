@@ -85,19 +85,21 @@ export default {
             //       'X-CSRFToken': this.csrfToken, // Include CSRF token in the headers
             //     },
             // }
-          );
+          ).catch(err=>{
+            this.$refs.loginForm.resetValidation();
+            console.error(err.response.data.result);
+            this.incorrectCredentials = err.response.data.result
+            this.$refs.loginForm.validate();
+            this.loginFlag = true;
+
+          });
           if (response.status == 200) {
             // localStorage.setItem('token', response.data.token);
             // console.log('new token', response.data.csrftoken)
             this.$router.push('/');
-
           }
         } catch (error) {
-          this.$refs.loginForm.resetValidation();
-          console.error(error.response.data.result);
-          this.incorrectCredentials = error.response.data.result
-          this.$refs.loginForm.validate();
-          this.loginFlag = true;
+          console.log(error)
         }
       }
 

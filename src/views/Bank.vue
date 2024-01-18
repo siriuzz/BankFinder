@@ -1,27 +1,39 @@
 <template>
-  <v-container  >
+  <v-container>
     <v-col justify-content='center'>
       <v-row>
-        <v-card  elevation="5" width="100%" >
+        <v-card elevation="5" width="100%">
           <v-sheet class="d-flex bg-secondary align-center">
-            <v-card  elevation="0" class="ma-3" outlined>
+            <v-card elevation="0" class="ma-3" outlined>
 
-              <v-img wrap width="500"  :src="'http://localhost:8000' + info.logo"></v-img>
-            </v-card >
+              <v-img wrap width="500" :src="'http://localhost:8000' + info.logo"></v-img>
+            </v-card>
             <v-card-title class="text-h4 ">{{ info.bank_name }}</v-card-title>
           </v-sheet>
           <v-sheet class="justify-center d-flex">
-            <v-sheet rounded="8" class="bg-secondary text-center rounded-pill d-flex justify-center justify-space-around  pa-5 mt-5 text" width="90%">
+            <v-sheet rounded="8"
+              class="bg-secondary text-center rounded-pill d-flex justify-center justify-space-around  pa-5 mt-5 text"
+              width="90%">
               <v-sheet class="bg-transparent">
 
                 <p class="text-subtitle font-weight-bold">Página web:</p>
                 <p> {{ info.website }}</p>
-              </v-sheet> 
+              </v-sheet>
+              <v-sheet class="bg-transparent" v-if="currenciesExist">
+
+                <p class="text-subtitle font-weight-bold">Divisas:</p>
+                <p>
+                  <v-chip v-for="currency_exchange in info.currency_exchanges">
+                   {{ currency_exchange.currency.currency_code }}
+                  </v-chip>
+
+                </p>
+              </v-sheet>
               <v-sheet class="bg-transparent">
 
                 <p class="text-subtitle font-weight-bold">Número principal:</p>
                 <p> {{ info.contact_number }}</p>
-              </v-sheet> 
+              </v-sheet>
             </v-sheet>
 
           </v-sheet>
@@ -61,6 +73,7 @@ export default {
       showBranches: false,
       auth: false,
       showDialog: false,
+      currenciesExist: false
     }
   },
   methods: {
@@ -76,6 +89,7 @@ export default {
         if (this.info.branches.length > 0) {
           this.showBranches = true
         }
+        if(this.info.currency_exchanges.length > 0) this.currenciesExist = true;
         // console.log(res)
       })
       .catch(err => {

@@ -3,23 +3,39 @@ version: '3'
 services:
   frontend:
     build:
-      context: ./src
+      context: .
     ports:
       - "3000:3000"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database # Replace with the actual host or IP of your external database
+      - DB_PORT=${DB_PORT}
+      - VITE_API_URL=localhost:8000/api
 
   backend:
     build:
       context: ./server
     ports:
       - "8000:8000"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database # Replace with the actual host or IP of your external database
+      - DB_PORT=${DB_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
     depends_on:
       - database
 
   database:
     image: postgres:latest
-    environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+    ports:
+      - "5432:5432"
+    volumes:
+      - 7ad3af46204465e3cb56efb47b379ffd7d8bc3bc0993199e898b0c710e0d0ee1:/var/lib/postgresql/data
+volumes:
+  7ad3af46204465e3cb56efb47b379ffd7d8bc3bc0993199e898b0c710e0d0ee1: 
+    external: true

@@ -50,8 +50,14 @@ class BankViewSet(viewsets.ModelViewSet):
     def get_banks_filter(self,request):
         params = request.query_params
         bank_name = params.get('bank_name')
-        if bank_name != "" or bank_name is not None:
-            filter = bank.objects.filter(bank_name__icontains=bank_name)
+        if bank_name != '' or bank_name is not None:
+            items_per_page=params.get('items_per_page')
+            filter = bank.objects.filter(bank_name__unaccent__icontains=bank_name)
+            # .filter(bank_name__trigram_strict_similar=bank_name)
+            # if(bank_name != ''): 
+            # else: 
+            #     filter = bank.objects.filter(bank_name__icontains=bank_name)
+                
             filter = filter.annotate(branches_count=Count('branches'))
         #     filter = bank.objects.filter(bank_name__istartswith=bank_name)
         #     filter = bank.objects.filter(bank_name__iendswith=bank_name)
@@ -72,11 +78,11 @@ class BankViewSet(viewsets.ModelViewSet):
 
             if opening_hour:
                   # Use Q objects to combine conditions with OR logic
-                  filter = filter.filter(branches__opening_hour__lte=opening_hour) 
+                  filter = filter.filter(branches__opening_hour__gte=opening_hour) 
                   
             if closing_hour:
                   # Use Q objects to combine conditions with OR logic
-                  filter = filter.filter(branches__closing_hour__gte=closing_hour) 
+                  filter = filter.filter(branches__closing_hour__lte=closing_hour) 
 
             currencies = params.get('currencies').split(',')
             # print(currencies)
@@ -84,8 +90,8 @@ class BankViewSet(viewsets.ModelViewSet):
                 for i in range(len(currencies)): 
                     filter = filter.filter(bank_currency_exchange__currency_id__currency_code=currencies[i])
                 
-            items_per_page=params.get('items_per_page')
-            paginator = Paginator(filter, items_per_page)
+            
+            paginator = Paginator(filter,items_per_page)
             
             try:
                 result_page = paginator.page(page)
