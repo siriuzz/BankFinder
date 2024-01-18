@@ -7,7 +7,7 @@
                     <v-card-title class="text-h4">Perfil</v-card-title>
                     <v-container v-if="user && !editProfile && !changePassword" class="d-flex flex-column w-90 ">
                         <v-chip-group column>
-                            <v-chip class="" prepend-icon="mdi-email">
+                            <v-chip class="" prepend-icon="mdi-card-account-details">
                                 Nombre: {{ user.first_name }}
                             </v-chip>
                             <v-chip prepend-icon="mdi-account">

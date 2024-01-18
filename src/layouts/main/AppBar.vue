@@ -1,6 +1,6 @@
 <template>
   <v-app-bar :elevation="3" color="primary">
-    <v-btn size="x-large" prepend-icon="mdi-bank" exact @click="goHome" variant="text" :ripple="false" ><v-app-bar-title>BankFinder</v-app-bar-title></v-btn>
+    <v-btn size="large" prepend-icon="mdi-bank" exact @click="goHome" variant="text" :ripple="false" ><v-app-bar-title class="font-weight-bold">BankFinder</v-app-bar-title></v-btn>
     <!-- <v-app-bar-nav-icon icon="mdi-bank"   /> 
     <v-app-bar-title @click="this.$router.push('/')">
 
@@ -16,10 +16,10 @@
       Crear cuenta
     </v-btn>
     <!-- <v-btn @click="is_logged=!is_logged">togge</v-btn> -->
-    <v-btn prepend-icon="mdi-account" border v-if="this.is_logged" class="mr-3" to="/profile">
+    <v-btn prepend-icon="mdi-account" variant="outlined" v-if="this.is_logged" class="mr-3" to="/profile">
       Perfil
     </v-btn>
-    <v-btn prepend-icon="mdi-logout" v-if="this.is_logged" border @click="logout()">
+    <v-btn prepend-icon="mdi-logout" v-if="this.is_logged" variant='outlined' @click="logout()">
       Logout
     </v-btn>
   </v-app-bar>

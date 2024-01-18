@@ -45,7 +45,7 @@
               <v-item-group>
                 <v-card class='d-flex flex-column' elevation="5" height="200" link>
                   <v-sheet height="40%" min-height="40%" class="d-flex align-center">
-                    <v-img cover :src="'http://localhost:8000' + bank.logo" />
+                    <v-img fit :src="'http://localhost:8000' + bank.logo" />
                   </v-sheet>
                   <v-sheet max-heigth="300" height="500" width="auto" class="d-inline-flex">
                     <v-container class="h-auto font-weight-bold text-h6 text-wrap d-inline-block text-start">
@@ -69,7 +69,7 @@
         </v-col>
       </v-row>
     </v-responsive>
-    <v-pagination :model-value='filterParams.page' v-model="filterParams.page" @click="fetchBanks"
+    <v-pagination :model-value='filterParams.page' v-model="filterParams.page" total-visible="5" @click="fetchBanks"
       :length="numberOfPages"></v-pagination>
   </v-sheet>
 </template>
@@ -108,6 +108,17 @@ export default {
   },
   methods: {
     restartFilters() {
+      this.filterParams = {
+        bank_name: "",
+        page: 1,
+        min_sucursales: 0,
+        max_sucursales: 10,
+        opening_hour: '',
+        closing_hour: '',
+        currencies: [],
+        items_per_page: 3
+      },
+      window.localStorage.setItem('filters',JSON.stringify(this.filterParams))
       window.location.reload();
     },
     fetchFilters() {

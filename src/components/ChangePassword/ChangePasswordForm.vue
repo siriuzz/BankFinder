@@ -4,12 +4,12 @@
             sesión</v-alert>
         <v-form fast-fail validate-on="input" ref="changePasswordForm" v-model="formValid">
             <v-text-field label="Contraseña anterior" :rules='oldPasswordRules' v-model="oldPassword" clearable
-                density="compact" type="password"></v-text-field>
-            <v-text-field label="Contraseña nueva" :rules="passwordRules" v-model="newPassword" clearable density="compact"
-                type="password"></v-text-field>
+                density="compact" :type="oldPasswordVisible?'text':'password'" @click:append-inner="oldPasswordVisible=!oldPasswordVisible" :append-inner-icon="oldPasswordVisible?'mdi-eye':'mdi-eye-off'"></v-text-field>
+            <v-text-field label="Contraseña nueva" :rules="passwordRules"  v-model="newPassword" clearable density="compact"
+            :type="passwordVisible?'text':'password'" @click:append-inner="passwordVisible=!passwordVisible" :append-inner-icon="passwordVisible?'mdi-eye':'mdi-eye-off'"></v-text-field>
 
             <v-text-field label="Repetir contraseña" :rules="repeatPasswordRules" v-model="repeatPassword" clearable
-                density="compact" type="password"></v-text-field>
+                density="compact" :type="repeatPasswordVisible?'text':'password'" @click:append-inner="repeatPasswordVisible=!repeatPasswordVisible" :append-inner-icon="repeatPasswordVisible?'mdi-eye':'mdi-eye-off'"></v-text-field>
             <v-container class="d-flex justify-space-around">
                 <v-btn :disabled="!valid">Guardar contraseña
                     <form-confirmation-dialog v-model="showDialog" @cancel="hideDialog" :save="updatePassword" :active="showDialog" text="¿Estas seguro que deseas cambiar tu contraseña?"/>
@@ -42,6 +42,9 @@ export default {
             incorrectPassword:false,
             samePassword:false,
             formValid: true,
+            passwordVisible:false,
+            repeatPasswordVisible:false,
+            oldPasswordVisible:false,
             oldPasswordRules: [
                 value => {
                     return this.requiredField(value);

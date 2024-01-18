@@ -1,10 +1,10 @@
 <template>
     <v-responsive>
-        <v-sheet class="px-5 text-h5 font-weight-bold">
+        <v-sheet class="px-5 text-h5  font-weight-bold">
             Sucursales
             <v-slide-group>
                 <v-slide-group-item v-for="branch in branches" :key="branch.branch_id">
-                    <v-card class="ma-1 d-flex flex-column flex-md-0-1 " elevation="3">
+                    <v-card class="mx-5 my-2 d-flex flex-column " height="auto" width="100%" elevation="3">
                         <v-card-title >{{ branch.branch_name }}</v-card-title>
                         <v-card-text >
                             Ubicación: {{ branch.location }} <br/>

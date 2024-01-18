@@ -9,9 +9,9 @@
           label="Nombre de Usuario"></v-text-field>
         <v-text-field v-model="email" :rules="emailRules" label="Correo electrónico"></v-text-field>
 
-        <v-text-field v-model="password" :rules="passwordRules" label="Contraseña" type="password"></v-text-field>
+        <v-text-field v-model="password" @click:append-inner="passwordVisible=!passwordVisible" :append-inner-icon="passwordVisible? 'mdi-eye':'mdi-eye-off'" :rules="passwordRules" label="Contraseña" :type="passwordVisible?'text':'password'"></v-text-field>
         <v-text-field v-model="repeatPassword" :rules="repeatPasswordRules" label="Repetir contraseña"
-          type="password"></v-text-field>
+          :type="repeatPasswordVisible?'text':'password'" @click:append-inner="repeatPasswordVisible=!repeatPasswordVisible" :append-inner-icon="repeatPasswordVisible?'mdi-eye':'mdi-eye-off'" ></v-text-field>
 
         <v-btn type="submit" color="primary" block class="mt-2" :loading="loading" >Registrarse</v-btn>
       </v-form>
@@ -33,6 +33,8 @@ export default {
       apiUrl: import.meta.env.VITE_API_URL,
       csrfToken: '',
       usernameTaken: false,
+      passwordVisible:false,
+      repeatPasswordVisible:false,
       requiredRules: [
         value => {
           if (value) return true

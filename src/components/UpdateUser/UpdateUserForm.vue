@@ -66,7 +66,7 @@ export default {
             this.$emit('cancel', this.active? this.done:this.active)
         },
         updateProfile() {
-            if (this.updateUserValid) {
+            if (this.formValid) {
                 this.editProfileDialog = false;
                 this.$axios.patch(`http://${this.url}/user/update`, {
                     'username': this.user.username,

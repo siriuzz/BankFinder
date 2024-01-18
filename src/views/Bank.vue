@@ -4,9 +4,9 @@
       <v-row>
         <v-card  elevation="5" width="100%" >
           <v-sheet class="d-flex bg-secondary align-center">
-            <v-card  elevation="0" class="ma-3" border>
+            <v-card  elevation="0" class="ma-3" outlined>
 
-              <v-img  cover width="500"  :src="'http://localhost:8000' + info.logo"></v-img>
+              <v-img wrap width="500"  :src="'http://localhost:8000' + info.logo"></v-img>
             </v-card >
             <v-card-title class="text-h4 ">{{ info.bank_name }}</v-card-title>
           </v-sheet>
