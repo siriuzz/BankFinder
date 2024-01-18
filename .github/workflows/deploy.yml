@@ -30,7 +30,7 @@ jobs:
       - name: Build and Push Frontend and Backend
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./src
           push: true
           tags: |
             ${{secrets.DOCKER_USER}}/frontend:latest
