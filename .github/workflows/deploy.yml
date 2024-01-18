@@ -27,14 +27,14 @@ jobs:
           docker build -t ${{secrets.DOCKER_USER}}/bankfinder:latest .
           docker push ${{secrets.DOCKER_USER}}/bankfinder:latest
 
-      - name: Build and Push Docker Images
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{secrets.DOCKER_USER}}/frontend:latest
-            ${{secrets.DOCKER_USER}}/backend:latest
+      # - name: Build and Push Docker Images
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: |
+      #       ${{secrets.DOCKER_USER}}/frontend:latest
+      #       ${{secrets.DOCKER_USER}}/backend:latest
 
       - name: Deploy with Docker Compose
         run: docker-compose up -d
