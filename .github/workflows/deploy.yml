@@ -39,8 +39,8 @@ jobs:
       - name: Deploy with Docker Compose
         run: docker-compose up -d
         env:
-          - DB_NAME: ${{ secrets.DB_NAME }}
-          - DB_USER: ${{ secrets.DB_USER }}
-          - DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          - DB_HOST: ${{secrets.DB_HOST}}
-          - DB_PORT: ${{secrets.DB_PORT}}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_PORT: ${{secrets.DB_PORT}}
