@@ -16,7 +16,7 @@ RUN python -m venv $VIRTUAL_ENV
 RUN pip install --upgrade pip
 
 # Install any needed packages directly from your project
-RUN pip install --no-cache-dir -r server/requirements.txt  # Adjust the path accordingly
+RUN pip install --no-cache-dir -r requirements.txt  # Adjust the path accordingly
 
 # Expose the port the app runs on
 EXPOSE 8000
