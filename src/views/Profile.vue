@@ -24,7 +24,7 @@
     
     
                     </v-container>
-                    <update-user-form :check-username="checkUsername" @cancel='cancelUpdate' :user="user" :updateUserValid="updateUserValid" :active="editProfile"/>
+                    <update-user-form  @cancel='cancelUpdate' :user="user" :updateUserValid="updateUserValid" :active="editProfile"/>
                     <!-- <v-container v-if="user && editProfile && !change_password" class="d-flex flex-column w-75 ">
                         
                         <v-form @submit.prevent ref="updateUserForm" v-model="updateUserValid"
@@ -90,10 +90,10 @@ export default {
         }
     },
     methods: {
-        validateUpdateUserForm() {
-            this.$refs.updateUserForm.validate();
-            console.log(updateUserValid)
-        },
+        // validateUpdateUserForm() {
+        //     this.$refs.updateUserForm.validate();
+        //     console.log(updateUserValid)
+        // },
         cancelUpdate(cancel){
             this.editProfile = cancel
         },
@@ -111,78 +111,33 @@ export default {
                     if (err.response.status == 403) this.$router.push('/login')
                 });
         },
-        updateProfile() {
-            if (this.updateUserValid) {
-                this.editProfileDialog = false;
-                this.$axios.patch(`${this.url}/user/update`, {
-                    'username': this.user.username,
-                    'first_name': this.user.first_name,
-                    'last_name': this.user.last_name
-                }, {
+        // updateProfile() {
+        //     if (this.updateUserValid) {
+        //         this.editProfileDialog = false;
+        //         this.$axios.patch(`${this.url}/user/update`, {
+        //             'username': this.user.username,
+        //             'first_name': this.user.first_name,
+        //             'last_name': this.user.last_name
+        //         }, {
 
-                    headers: {
-                        'X-CSRFToken': this.$cookies.get('csrftoken')
-                    }
-                })
-                    .then(res => {
-                        console.log(res)
-                        // if (res.status == 200) this.$router.push('/login');
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        // if (err.response.status == 403) this.$router.push('/login')
-                    });
-                this.editProfile = !this.editProfile
-            }
-
-
-        },
-        updatePassword() {
-            this.$refs.changePasswordForm.validate()
-            if (this.changePasswordValid) {
-                this.$axios.patch(`${this.url}/user/change_password`, {
-                    'old_password': this.old_password,
-                    'new_password': this.new_password,
-                    'repeat_password': this.repeat_password,
-                },
-                    {
-                        headers: {
-                            'X-CSRFToken': this.$cookies.get('csrftoken')
-                        }
-                    }
-                )
-                    .then(res => {
-                        console.log(res)
-                        if (res.status == 200) this.$router.push('/login');
-                        this.changePassword = !this.changePassword
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        if (err.data.samePassword == true) this.samePassword = true;
-                        else this.incorrectPassword = true;
-
-                        this.$refs.changePasswordForm.validate();
-                        this.changePasswordDialog = false;
-                        // if (err.response.status == 403) this.$router.push('/login')
-                    });
-            }
+        //             headers: {
+        //                 'X-CSRFToken': this.$cookies.get('csrftoken')
+        //             }
+        //         })
+        //             .then(res => {
+        //                 console.log(res)
+        //                 // if (res.status == 200) this.$router.push('/login');
+        //             })
+        //             .catch(err => {
+        //                 console.error(err);
+        //                 // if (err.response.status == 403) this.$router.push('/login')
+        //             });
+        //         this.editProfile = !this.editProfile
+        //     }
 
 
-        },
-        async checkUsername() {
-            this.$axios.get(
-                `${this.url}/user/is-username-taken`, {
-                params: {
-                    username: this.user.username,
-                },
-            }
-            ).then(res => {
-                console.log(res);
-                if (res.data.taken) return this.usernameTaken = true
-            }).catch(err => {
-                console.log(err);
-            });
-        },
+        // },
+       
 
         requiredField(value) {
             if (value.length > 0) return true
@@ -194,7 +149,7 @@ export default {
     computed: {
         parseDate() {
             if (this.user) {
-                console.log(this.user.last_login);
+                // console.log(this.user.last_login);
                 const newDate = new Date(this.user.last_login);
                 const options = {
                     month: 'long',

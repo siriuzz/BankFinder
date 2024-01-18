@@ -1,5 +1,5 @@
 <template>
-    <v-dialog activator="parent" width="auto">
+    <v-dialog activator="parent" width="auto" min-width="30%">
         <v-card>
             <v-card-text>{{ text }}</v-card-text>
             <v-card-actions>

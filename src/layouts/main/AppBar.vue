@@ -1,24 +1,25 @@
 <template>
-  <v-app-bar :elevation="3">
-    <v-app-bar-nav-icon icon="mdi-bank" to="/" /> 
+  <v-app-bar :elevation="3" color="primary">
+    <v-btn size="x-large" prepend-icon="mdi-bank" exact @click="goHome" variant="text" :ripple="false" ><v-app-bar-title>BankFinder</v-app-bar-title></v-btn>
+    <!-- <v-app-bar-nav-icon icon="mdi-bank"   /> 
     <v-app-bar-title @click="this.$router.push('/')">
 
         BankFinder
-    </v-app-bar-title>
+    </v-app-bar-title> -->
     <v-spacer></v-spacer>
 
-    <v-btn v-if="!this.is_logged" button to="/login">
-      Log in
+    <v-btn prepend-icon="mdi-login" v-if="!this.is_logged" button to="/login">
+      Iniciar sesión
     </v-btn>
 
-    <v-btn v-if="!this.is_logged" button to="/register" >
-      Register
+    <v-btn prepend-icon="mdi-account-plus" v-if="!this.is_logged" button to="/register" >
+      Crear cuenta
     </v-btn>
     <!-- <v-btn @click="is_logged=!is_logged">togge</v-btn> -->
-    <v-btn v-if="this.is_logged" to="/profile">
+    <v-btn prepend-icon="mdi-account" border v-if="this.is_logged" class="mr-3" to="/profile">
       Perfil
     </v-btn>
-    <v-btn v-if="this.is_logged" @click="logout()">
+    <v-btn prepend-icon="mdi-logout" v-if="this.is_logged" border @click="logout()">
       Logout
     </v-btn>
   </v-app-bar>
@@ -32,6 +33,11 @@ export default {
     }
   },
   methods: {
+    goHome(){
+      console.log(this.$router.currentRoute)
+      if(this.$router.currentRoute == "/") return window.location.reload();
+      this.$router.push('/');
+    },
     async checkIfLoggedIn() {
       try {
         const response = await this.$axios.get(

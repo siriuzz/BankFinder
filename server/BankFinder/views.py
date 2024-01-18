@@ -36,15 +36,15 @@ class BankViewSet(viewsets.ModelViewSet):
     serializer_class = BankSerializer
     permission_classes = [permissions.AllowAny]
 
-    def getBanks(self,request):
+    def get_banks(self,request):
         banks = bank.objects.prefetch_related('branches').all()
         serializer = BankSerializer(banks,many=True)
         return Response(serializer.data)
 
-    def getBankById(self, request, PK=None):
+    def get_bank_by_id(self, request, PK=None):
         bank_obj = bank.objects.get(pk=PK)
         serializer = BankSerializer(bank_obj)
-        print('hola')
+        # print('hola')
         return Response(serializer.data)
     
     def get_banks_filter(self,request):
@@ -79,7 +79,7 @@ class BankViewSet(viewsets.ModelViewSet):
                   filter = filter.filter(branches__closing_hour__gte=closing_hour) 
 
             currencies = params.get('currencies').split(',')
-            print(currencies)
+            # print(currencies)
             if currencies != ['']:
                 for i in range(len(currencies)): 
                     filter = filter.filter(bank_currency_exchange__currency_id__currency_code=currencies[i])
@@ -90,7 +90,7 @@ class BankViewSet(viewsets.ModelViewSet):
             try:
                 result_page = paginator.page(page)
             except PageNotAnInteger:
-                print('NAN')
+                # print('NAN')
                 result_page=paginator.page(1)
             except EmptyPage:
                 result_page = paginator.page(paginator.num_pages)
@@ -110,7 +110,7 @@ class BankViewSet(viewsets.ModelViewSet):
             serializer = BankSerializer(banks,many=True)
             return Response(serializer.data)
     
-    def createBank(self, request):
+    def create_bank(self, request):
         new_Bank = bank(bank_name=request.data.get("bank_name"), website=request.data.get("website"), contact_number=request.data.get("contact_number"))
         try:
             new_Bank.save()
@@ -118,7 +118,7 @@ class BankViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateBank(self, request, PK):
+    def update_bank(self, request, PK):
         try:
             updated_Bank = bank.objects.get(pk=PK)
             updated_Bank.bank_name = request.data.get("bank_name")
@@ -130,7 +130,7 @@ class BankViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteBank(self, request, PK=None):
+    def delete_bank(self, request, PK=None):
         try:
             deleted_Bank = bank.objects.get(pk=PK)
             deleted_Bank.delete()
@@ -145,17 +145,17 @@ class BranchViewSet(viewsets.ModelViewSet):
     serializer_class = BranchSerializer
     permission_classes = [permissions.AllowAny]
 
-    def getBranches(self,request):
+    def get_branches(self,request):
         branches = branch.objects.all()
         serializer = BranchSerializer(branches, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getBranchById(self, request, PK=None):
+    def get_branch_by_id(self, request, PK=None):
         branches = branch.objects.get(pk=PK)
         serializer = BranchSerializer(branches, context={'request': request})
         return Response(serializer.data)
     
-    def createBranch(self, request):
+    def create_branch(self, request):
         try:
             Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
 
@@ -172,7 +172,7 @@ class BranchViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateBranch(self, request, PK):
+    def update_branch(self, request, PK):
         try:
             updated_Branch = branch.objects.get(pk=PK)
             updated_Branch.branch_name = request.data.get('branch_name')
@@ -185,7 +185,7 @@ class BranchViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteBranch(self, request, PK=None):
+    def delete_branch(self, request, PK=None):
         try:
             deleted_Branch = branch.objects.get(pk=PK)
             deleted_Branch.delete()
@@ -199,17 +199,17 @@ class CurrencyViewSet(viewsets.ModelViewSet):
     serializer_class = CurrencySerializer
     permission_classes = [permissions.AllowAny]
 
-    def getCurrency(self,request):
+    def get_currency(self,request):
         source_currencies = currency.objects.all()
         serializer = CurrencySerializer(source_currencies, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getCurrencyById(self, request, PK=None):
+    def get_currency_by_id(self, request, PK=None):
         source_currencies = currency.objects.get(pk=PK)
         serializer = CurrencySerializer(source_currencies, context={'request': request})
         return Response(serializer.data)
     
-    def createCurrency(self, request):
+    def create_currency(self, request):
         try:
             new_currency = currency(
                 currency_code=request.data.get("currency_code"), 
@@ -220,7 +220,7 @@ class CurrencyViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateCurrency(self, request, PK):
+    def update_currency(self, request, PK):
         try:
             updated_currency = currency.objects.get(pk=PK)
             updated_currency.currency_code = request.data.get('currency_code')
@@ -230,7 +230,7 @@ class CurrencyViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteCurrency(self, request, PK=None):
+    def delete_currency(self, request, PK=None):
         try:
             deleted_currency = currency.objects.get(pk=PK)
             deleted_currency.delete()
@@ -246,17 +246,17 @@ class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
     serializer_class = BankCurrencyExchangeSerializer
     permission_classes = [permissions.AllowAny]
 
-    def getBankCurrencyExchange(self,request):
+    def get_bank_currency_exchange(self,request):
         bank_currency_exchanges = bank_currency_exchange.objects.all()
         serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def getBankCurrencyExchangeById(self, request, PK=None):
+    def get_bank_currency_exchange_by_id(self, request, PK=None):
         bank_currency_exchanges = bank_currency_exchange.objects.get(pk=PK)
         serializer = BankCurrencyExchangeSerializer(bank_currency_exchanges, context={'request': request})
         return Response(serializer.data)
     
-    def createBankCurrencyExchange(self, request):
+    def create_bank_currency_exchange(self, request):
         try:
             currency_object = currency.objects.get(pk=request.data.get("currency_id"))
             Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
@@ -273,7 +273,7 @@ class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def updateBankCurrencyExchange(self, request, PK):
+    def update_bank_currency_exchange(self, request, PK):
         try:
             currency_object = currency.objects.get(pk=request.data.get("currency_id"))
             Bank_object = bank.objects.get(pk=request.data.get("bank_id"))
@@ -290,7 +290,7 @@ class BankCurrencyExchangeViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'status':'failed', 'error':str(e)}, status=401)
     
-    def deleteBankCurrencyExchange(self, request, PK=None):
+    def delete_bank_currency_exchange(self, request, PK=None):
         try:
             deleted_bank_currency_exchange = bank_currency_exchange.objects.get(pk=PK)
             deleted_bank_currency_exchange.delete()
@@ -352,7 +352,7 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error', str(e)})
         
-    def getUserBySessionId(self,request):
+    def get_user_by_session_id(self,request):
         session_id = request.COOKIES.get('sessionid')
         if session_id:
             try:
@@ -371,7 +371,7 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response("Missing session id")
         
-    def updateUser(self,request):
+    def update_user(self,request):
         session_id = request.COOKIES.get('sessionid')
         if request.user.is_authenticated:
             try:
@@ -391,16 +391,17 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'message':'El usuario no esta autenticado'})
         
-    def changePassword(self,request):
-        session_id = request.COOKIES.get('sessionid')
+    def change_password(self,request):
+        # session_id = request.COOKIES.get('sessionid')
         if request.user.is_authenticated:
             try:
-                session = Session.objects.get(session_key=session_id)
-                user_id = session.get_decoded().get('_auth_user_id')
+                
+                user_id = request.user.id
                 user = User.objects.get(id=user_id)
+                # print(request.data.get('old_password'))
                 auth = user.check_password(request.data.get('old_password'))
                 authNewPassword = user.check_password(request.data.get('new_password'))
-                print(auth)
+                # print(auth)
                 if auth:
                     user.set_password(request.data.get("new_password"))
                     user.save()
@@ -414,12 +415,12 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'message':'El usuario no esta autenticado'})
 
-    def isUsernameTaken(self,request):
+    def is_username_taken(self,request):
         username = request.GET.get('username')
-        print(request.user.is_authenticated)
+        # print(request.user.is_authenticated)
         if request.user.is_authenticated:
             currentUser = User.objects.get(username=request.user.username)
-            if User.objects.filter(username=username).exists():
+            if User.objects.filter(username=username).exclude(username=currentUser).exists():
                     return Response({'taken':True})
         else:
             if User.objects.filter(username=username).exists():
@@ -430,7 +431,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def reset_password(self,request):
         recipient_email = request.data.get('email')
-        print(recipient_email)
+        # print(recipient_email)
         
         try:
            user = User.objects.get(email=recipient_email)

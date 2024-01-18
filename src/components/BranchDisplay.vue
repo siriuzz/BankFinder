@@ -4,7 +4,7 @@
             Sucursales
             <v-slide-group>
                 <v-slide-group-item v-for="branch in branches" :key="branch.branch_id">
-                    <v-card class="ma-1 d-flex flex-column w-25" elevation="3">
+                    <v-card class="ma-1 d-flex flex-column flex-md-0-1 " elevation="3">
                         <v-card-title >{{ branch.branch_name }}</v-card-title>
                         <v-card-text >
                             Ubicación: {{ branch.location }} <br/>
