@@ -20,6 +20,5 @@ RUN pip install --no-cache-dir -r requirements.txt  # Adjust the path accordingl
 
 # Expose the port the app runs on
 EXPOSE 8000
-
 # Command to run the application
 CMD ["bash", "-c", "source /venv/bin/activate && cd server && python manage.py runserver 0.0.0.0:8000"]
