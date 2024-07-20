@@ -1,7 +1,10 @@
-# base
+# BankFinder
+
+## Concept
+BankFinder is a comprehensive bank search tool designed specifically for the Dominican Republic. Key features include an account management system, an intuitive search bar, efficient pagination, advanced filtering options, user profile pages, and a robust password recovery system. The platform is built using Vue.js for the frontend, Django for the backend, and PostgreSQL for the database, ensuring a seamless and reliable user experience.
 
 ## Project setup
-
+- Vue.js
 ```
 # yarn
 yarn
@@ -16,36 +19,15 @@ pnpm install
 bun install
 ```
 
-### Compiles and hot-reloads for development
+- Django
 
 ```
-# yarn
-yarn dev
+# activate virtual environment
+.\local\venv\Scripts\activate
 
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# bun
-bun run dev
-```
-
-### Compiles and minifies for production
-
-```
-# yarn
-yarn build
-
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# bun
-bun run build
+# install dependencies
+cd ./server
+python3 -m pip install -r requirements.txt
 ```
 
 ### Lints and fixes files
@@ -63,7 +45,3 @@ pnpm lint
 # bun
 bun run lint
 ```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
